@@ -1,0 +1,249 @@
+/* 
+* 视频转文本网站响应式样式表
+* 作者: AI助手
+* 版本: 1.0
+*/
+
+/* 大型桌面设备 (大于1200px) */
+@media (min-width: 1201px) {
+    /* 无特殊样式，使用默认样式 */
+}
+
+/* 桌面设备 (992px-1200px) */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 960px;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+	
+	.faq-container {
+		grid-template-columns: repeat(2, 1fr);
+	}
+    
+    .pricing-cards {
+        flex-wrap: wrap;
+    }
+    
+    .pricing-card {
+        flex: 0 0 calc(50% - 15px);
+        margin-bottom: 30px;
+    }
+    
+    .pricing-card.featured {
+        transform: scale(1.03);
+    }
+    
+    .pricing-card.featured:hover {
+        transform: scale(1.03) translateY(-10px);
+    }
+}
+
+/* 平板设备 (768px-991px) */
+@media (max-width: 991px) {
+    .container {
+        max-width: 720px;
+    }
+    
+    .header {
+        height: auto;
+        padding: 15px 0;
+    }
+    
+    .main-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: white;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    
+    .main-nav.active {
+        display: block;
+    }
+    
+    .main-nav ul {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    .hero {
+        padding: 120px 0 80px;
+    }
+    
+    .hero .container {
+        flex-direction: column;
+    }
+    
+    .hero-content {
+        padding-right: 0;
+        margin-bottom: 50px;
+        text-align: center;
+    }
+    
+    .hero-buttons {
+        justify-content: center;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+	
+	.faq-container {
+		grid-template-columns: 1fr;
+		max-width: 500px;
+		margin: 0 auto;
+	}
+    
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        row-gap: 50px;
+    }
+}
+
+/* 手机设备 (576px-767px) */
+@media (max-width: 767px) {
+    .container {
+        max-width: 540px;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 40px;
+    }
+    
+    .auth-buttons .btn-outline {
+        display: none;
+    }
+    
+    .hero h2 {
+        font-size: 2.2rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+    }
+    
+    .pricing-card {
+        flex: 0 0 100%;
+    }
+    
+    .pricing-card.featured {
+        transform: none;
+    }
+    
+    .pricing-card.featured:hover {
+        transform: translateY(-10px);
+    }
+    
+    .testimonials-slider {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .testimonial {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+    }
+    
+    .newsletter-form input {
+        border-radius: var(--btn-radius);
+        margin-bottom: 10px;
+    }
+    
+    .newsletter-form button {
+        border-radius: var(--btn-radius);
+    }
+}
+
+/* 小型手机设备 (小于576px) */
+@media (max-width: 575px) {
+    section {
+        padding: 60px 0;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+    }
+    
+    .header .container {
+        padding: 0 10px;
+    }
+    
+    .logo h1 {
+        font-size: 1.3rem;
+    }
+    
+    .auth-buttons {
+        gap: 5px;
+    }
+    
+    .btn {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .hero {
+        padding: 100px 0 60px;
+    }
+    
+    .hero h2 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .convert-options {
+        padding: 20px 15px;
+    }
+    
+    .file-upload-area {
+        padding: 30px 15px;
+    }
+    
+    .file-upload-area i {
+        font-size: 2.5rem;
+    }
+    
+    .step {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .step-number {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .step:not(:last-child):after {
+        display: none;
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .social-links {
+        justify-content: center;
+    }
+} 
