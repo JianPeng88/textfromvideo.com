@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video to Text Converter - textfromvideo.com</title>
+    <meta name="description" content="Upload videos or provide links to quickly convert video speech to text, supporting multiple formats for download">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <!-- Font icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <h1>textfromvideo</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-outline">Login</a>
+                <a href="#" class="btn btn-primary">Sign Up</a>
+            </div>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" style="background-color: #1e88e5; text-align: center;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 style="font-size: 2.8rem; margin-bottom: 25px; color: #fff; font-weight: 700; line-height: 1.2;">One-Click Video to Accurate Text Conversion</h2>
+                <p style="font-size: 1.1rem; color: #fff; margin-bottom: 30px; line-height: 1.6; max-width: 800px; margin: 0 auto 30px;">Our Text From Video platform supports effortless conversion of any video content into text, whether it's YouTube videos, TikTok videos, or local video files, with just one click.</p>
+                <div class="hero-buttons" style="display: flex; gap: 15px; justify-content: center;">
+                    <a href="#convert-section" class="btn" style="background-color: #ffffff; color: #1e88e5; padding: 12px 40px; font-size: 1.1rem; font-weight: 600; border-radius: 30px; text-decoration: none; display: inline-block; box-shadow: 0 3px 6px rgba(0,0,0,0.1);">Start Converting</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Convert Section -->
+    <section id="convert-section" class="convert-section">
+        <div class="container">
+            <h2 class="section-title">Start Converting</h2>
+            
+            <!-- 新增视频链接转换功能区块 -->
+            <div class="video-link-converter">
+                <div class="converter-inner">
+                    <div class="converter-icon">
+                        <i class="fab fa-youtube youtube-icon"></i>
+                        <i class="fab fa-tiktok tiktok-icon"></i>
+                    </div>
+                    <div class="converter-content">
+                        <h3>Convert from Video Link</h3>
+                        <p>Paste YouTube or TikTok link to instantly convert to text</p>
+                        <div class="link-input-container">
+                            <input type="text" class="link-input" placeholder="https://www.youtube.com/watch?v=... or https://www.tiktok.com/...">
+                            <button class="convert-btn">
+                                <i class="fas fa-bolt"></i> Convert
+                            </button>
+                        </div>
+                        <div class="platform-badges">
+                            <span class="platform-badge youtube">
+                                <i class="fab fa-youtube"></i> YouTube
+                            </span>
+                            <span class="platform-badge tiktok">
+                                <i class="fab fa-tiktok"></i> TikTok
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="convert-options">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="upload">Upload Video</button>
+                    <button class="tab-btn" data-tab="link">Video Link</button>
+                </div>
+                
+                <div class="tab-content active" id="upload-tab">
+                    <form class="upload-form">
+                        <div class="file-upload-area">
+                            <input type="file" id="video-file" accept="video/*" hidden>
+                            <label for="video-file">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload or drag and drop video file</span>
+                                <span class="file-types">Supported formats: MP4, AVI, MOV (max 100MB)</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Start Converting</button>
+                    </form>
+                </div>
+                
+                <div class="tab-content" id="link-tab">
+                    <form class="link-form">
+                        <div class="input-group">
+                            <i class="fas fa-link"></i>
+                            <input type="url" placeholder="Enter YouTube or other video platform link" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Start Converting</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+	
+	<!-- How It Works Section -->
+	<section id="how-it-works" class="how-it-works-section" style="padding-top: 0;">
+	    <div class="container">
+	        <h2 class="section-title">How It Works</h2>
+	        <div class="steps">
+	            <div class="step">
+	                <div class="step-number">1</div>
+	                <div class="step-content">
+	                    <h3>Upload Video or Provide Link</h3>
+	                    <p>Upload a local video file or enter a YouTube or other platform video link</p>
+	                </div>
+	            </div>
+	            <div class="step">
+	                <div class="step-number">2</div>
+	                <div class="step-content">
+	                    <h3>AI Automatic Conversion</h3>
+	                    <p>System automatically recognizes speech content in the video and converts it to text</p>
+	                </div>
+	            </div>
+	            <div class="step">
+	                <div class="step-number">3</div>
+	                <div class="step-content">
+	                    <h3>Edit Text</h3>
+	                    <p>Edit conversion results online, correct errors, add punctuation</p>
+	                </div>
+	            </div>
+	            <div class="step">
+	                <div class="step-number">4</div>
+	                <div class="step-content">
+	                    <h3>Download Results</h3>
+	                    <p>Choose your preferred format and download the converted text file</p>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</section>
+	
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-microphone-alt"></i>
+                    </div>
+                    <h3>High Precision Speech Recognition</h3>
+                    <p>Advanced AI technology with over 95% accuracy, supporting multiple languages</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Fast Processing</h3>
+                    <p>Efficient conversion engine, 10-minute videos converted in as fast as 30 seconds</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>Text Editing</h3>
+                    <p>Edit text online after conversion, correct errors, add punctuation</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Multiple Format Downloads</h3>
+                    <p>Download in TXT, PDF, Word and other formats to meet different needs</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section class="intro-section">
+        <div class="container">
+            <div class="intro-content">
+                <p>Our VideoTextAI platform enables effortless Video to Text conversion, transforming any video content into accurate text with just one click. Whether you need mp4 to text transcription or professional Text from video solutions, our technology meets all your requirements.</p>
+                <p>The platform integrates a practical youtube mp4 downloader tool, supporting youtube video download online operations for easy access to desired content. Our Youtube to mp3 and Youtube to mp4 conversion features ensure you can save media files in your preferred format. For quality-conscious users, we offer youtube video download 1080p options to guarantee video clarity. Simply provide a youtube video link download, and within minutes, complete the entire process from uploading videos to generating text—efficient and convenient.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <h2 class="section-title">User Reviews</h2>
+            <div class="testimonials-slider">
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>"This tool is amazing! It saved me tons of time organizing meeting notes, and the recognition accuracy is very high."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="assets/images/user1.jpg" alt="User Avatar">
+                        <div class="author-info">
+                            <h4>Robert Smith</h4>
+                            <p>Project Manager</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>"As a student, this tool helped me quickly organize video course content, improving my learning efficiency considerably!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="assets/images/user2.jpg" alt="User Avatar">
+                        <div class="author-info">
+                            <h4>Emily Chen</h4>
+                            <p>College Student</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing-section">
+        <div class="container">
+            <h2 class="section-title">Pricing Plans</h2>
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Free</h3>
+                        <div class="price">
+                            <span class="amount">$0</span>
+                            <span class="period">/forever</span>
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> Videos under 5 minutes</li>
+                            <li><i class="fas fa-check"></i> Basic text editing</li>
+                            <li><i class="fas fa-check"></i> TXT format export</li>
+                            <li class="disabled"><i class="fas fa-times"></i> No timestamps</li>
+                            <li class="disabled"><i class="fas fa-times"></i> No subtitle generation</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <a href="#" class="btn btn-outline btn-full">Start Using</a>
+                    </div>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="ribbon">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Standard</h3>
+                        <div class="price">
+                            <span class="amount">$29</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> Videos under 30 minutes</li>
+                            <li><i class="fas fa-check"></i> Advanced text editing</li>
+                            <li><i class="fas fa-check"></i> Multiple formats (TXT, PDF, DOCX)</li>
+                            <li><i class="fas fa-check"></i> Timestamps support</li>
+                            <li class="disabled"><i class="fas fa-times"></i> No subtitle generation</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <a href="#" class="btn btn-primary btn-full">Buy Now</a>
+                    </div>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Professional</h3>
+                        <div class="price">
+                            <span class="amount">$79</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> Unlimited video length</li>
+                            <li><i class="fas fa-check"></i> Professional text editing</li>
+                            <li><i class="fas fa-check"></i> All format export options</li>
+                            <li><i class="fas fa-check"></i> Precise timestamps</li>
+                            <li><i class="fas fa-check"></i> Subtitle generation (SRT, VTT)</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <a href="#" class="btn btn-outline btn-full">Buy Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq-section">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What is TextFromVideo?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>TextFromVideo is a powerful AI transcription platform offering unlimited audio and video text conversion services. This tool can accurately transform audio content in more than 98 languages into written text, with an impressive level of precision.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How much does it cost?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>TextFromVideo is currently completely free of charge, so please feel free to use it without hesitation!</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Is TextFromVideo truly unlimited?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! TextFromVideo is indeed unlimited. There is absolutely no limit on total usage, with our customers typically processing hundreds of hours of content monthly. We have just one basic requirement: please do not share your account credentials or access with others.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Which audio/video formats do you support?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>TextFromVideo is compatible with virtually all mainstream audio and video file types, covering common formats like MP3, M4A, MP4, and MOV, while supporting audio standards such as AAC, WAV, OGG, and OPUS, as well as traditional video formats including MPEG, WMA, WMV, and AVI, and even professional media formats like FLAC, AIFF, ALAC, 3GP, MKV, WEBM, VOB, RMVB, MTS, TS, QuickTime, and DivX.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Can I export my transcripts?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely! Your transcripts can be downloaded in various formats including: PDF documents, DOCX files, subtitle formats (SRT/VTT), CSV data sheets, and plain text TXT files. Additionally, our batch processing feature enables you to export multiple files simultaneously, significantly enhancing your workflow efficiency.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Which languages do you support?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>TextFromVideo employs cutting-edge artificial intelligence transcription technology to accurately convert spoken content from over 98 languages into written text. English transcription achieves the highest accuracy, reaching near-human performance levels and excellently recognizing specialized terminology across various professional domains. Transcription precision varies by language. We deliver exceptional results in: English, Spanish, French, German, Italian, Portuguese, Dutch, Chinese, Japanese, Russian, Arabic, Hindi, Swedish, Norwegian, Danish, Polish, Turkish, Hebrew, Greek, Czech, Vietnamese, and Korean. We warmly recommend trying our free plan to experience our service quality firsthand.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <h3>textfromvideo.com</h3>
+                    <p>We are dedicated to providing high-quality video speech recognition services to help users improve productivity</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Terms of Use</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-newsletter">
+                    <h4>Subscribe for Updates</h4>
+                    <p>Get the latest features and offers</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 textfromvideo.com. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <style>
+        /* 为新增部分添加样式 */
+        .intro-section {
+            padding: 60px 0;
+            background-color: var(--light-bg);
+        }
+        
+        .intro-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        
+        .intro-content p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        
+        .faq-section {
+            padding: 80px 0;
+            background-color: #f9f9f9;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 40px auto 0;
+        }
+        
+        .faq-item {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .faq-question h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--dark-color);
+            padding-right: 30px;
+        }
+        
+        .faq-question::after {
+            content: '\f107';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-item.active .faq-question::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+        
+        .faq-answer {
+            padding: 0 20px 20px;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+        
+        /* 视频链接转换功能样式 */
+        .video-link-converter {
+            background: linear-gradient(to right, rgba(66, 133, 244, 0.03), rgba(219, 68, 55, 0.03));
+            padding: 20px;
+            margin: 0 0 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .converter-inner {
+            display: flex;
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .converter-icon {
+            font-size: 2.8rem;
+            margin-right: 25px;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+        
+        .youtube-icon {
+            color: #FF0000;
+            position: absolute;
+            left: 0;
+            top: 8px;
+            font-size: 3.2rem;
+        }
+        
+        .tiktok-icon {
+            color: #000000;
+            position: absolute;
+            left: 36px;
+            top: 28px;
+            font-size: 2.4rem;
+            text-shadow: 
+                2px 0 0 #00f2ea,
+                -2px 0 0 #ff004f;
+        }
+        
+        .converter-content {
+            flex: 1;
+        }
+        
+        .converter-content h3 {
+            font-size: 1.3rem;
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+        }
+        
+        .converter-content p {
+            margin: 0 0 15px 0;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+        
+        .link-input-container {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .link-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px 0 0 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .link-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+        
+        .convert-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 0 8px 8px 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .convert-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1a5276);
+        }
+        
+        .platform-badges {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .platform-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            gap: 5px;
+            font-weight: 500;
+        }
+        
+        .platform-badge.youtube {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: #FF0000;
+        }
+        
+        .platform-badge.tiktok {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #000000;
+        }
+        
+        @media (max-width: 768px) {
+            .converter-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .converter-icon {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .link-input-container {
+                flex-direction: column;
+            }
+            
+            .link-input {
+                border-radius: 8px;
+                margin-bottom: 10px;
+            }
+            
+            .convert-btn {
+                border-radius: 8px;
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .platform-badges {
+                justify-content: center;
+                margin-top: 15px;
+            }
+        }
+    </style>
+    <script>
+        // 为FAQ添加交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const faqItem = this.parentElement;
+                    faqItem.classList.toggle('active');
+                    
+                    // 关闭其他项
+                    const allItems = document.querySelectorAll('.faq-item');
+                    allItems.forEach(item => {
+                        if (item !== faqItem) {
+                            item.classList.remove('active');
+                        }
+                    });
+                });
+            });
+            
+            // 默认打开第一个FAQ
+            const firstFaqItem = document.querySelector('.faq-item');
+            if (firstFaqItem) {
+                firstFaqItem.classList.add('active');
+            }
+            
+            // 初始化视频链接转换功能
+            initVideoLinkConverter();
+        });
+        
+        /**
+         * 初始化视频链接转换功能
+         */
+        function initVideoLinkConverter() {
+            const convertBtn = document.querySelector('.convert-btn');
+            const linkInput = document.querySelector('.link-input');
+            
+            if (convertBtn && linkInput) {
+                convertBtn.addEventListener('click', function() {
+                    const videoUrl = linkInput.value.trim();
+                    if (!videoUrl) {
+                        alert('Please enter a YouTube or TikTok video link');
+                        return;
+                    }
+                    
+                    // 显示加载状态
+                    convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Converting...';
+                    convertBtn.disabled = true;
+                    
+                    // 模拟转换过程
+                    setTimeout(() => {
+                        // 转换完成，跳转到编辑页面
+                        window.location.href = 'edit.html?source=' + encodeURIComponent(videoUrl);
+                    }, 2000);
+                });
+            }
+        }
+    </script>
+<script src="js/videoConverter.js"></script>
+</body>
+</html> 
