@@ -1,0 +1,11 @@
+# 设置所有CSS文件的正确MIME类型
+/css/*
+  Content-Type: text/css
+
+# 设置所有JavaScript文件的正确MIME类型
+/js/*
+  Content-Type: application/javascript
+
+# 设置字体文件的MIME类型
+/*.woff2
+  Content-Type: font/woff2
