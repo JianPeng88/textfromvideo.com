@@ -1,11 +1,11 @@
 /**
- * 修复的视频链接转换功能
- * 保存为 js/videoConverter.js
+ * 视频链接转换功能 - 修复版
+ * 文件: js/videoConverter.js
  */
 
 // 全局配置
 const VIDEO_CONVERTER = {
-    // 是否使用模拟数据（适合没有真实API时测试使用）
+    // 始终使用模拟数据（无需API调用，确保功能可用）
     useMockData: true,
     
     // 模拟处理时间（毫秒）
@@ -50,18 +50,26 @@ const VIDEO_CONVERTER = {
     checkCurrentPageFunctions: function() {
         const currentPath = window.location.pathname;
         
-        if (currentPath.includes('convert.html')) {
+        // 提取页面名称，处理各种路径格式
+        const pageName = currentPath.split('/').pop() || 'index.html';
+        
+        if (pageName.includes('convert.html') || pageName === 'convert') {
             // 在转换页面，启动转换状态监控
             this.startConversionMonitoring();
-        } else if (currentPath.includes('edit.html')) {
+        } else if (pageName.includes('edit.html') || pageName === 'edit') {
             // 在编辑页面，检查是否有来自URL的视频链接
             const urlParams = new URLSearchParams(window.location.search);
-            const videoSource = urlParams.get('source');
+            const videoSource = urlParams.get('source') || urlParams.get('url');
             
             if (videoSource) {
                 // 如果有source参数但没有已有的转录结果，则生成模拟数据
                 if (!sessionStorage.getItem('transcription_result')) {
                     this.generateMockTranscription(videoSource);
+                    // 强制刷新页面以应用新生成的转录
+                    if (!urlParams.has('refreshed')) {
+                        window.location.href = window.location.pathname + '?source=' + 
+                            encodeURIComponent(videoSource) + '&refreshed=true';
+                    }
                 }
             }
         }
@@ -79,8 +87,13 @@ const VIDEO_CONVERTER = {
         }
         
         if (!linkInput) {
-            console.error('找不到链接输入框');
-            return;
+            // 如果找不到输入框，尝试在页面上查找任何链接输入框
+            linkInput = document.querySelector('.link-input');
+            if (!linkInput) {
+                console.error('找不到链接输入框');
+                alert('系统错误：找不到输入框。请刷新页面后重试。');
+                return;
+            }
         }
         
         const videoUrl = linkInput.value.trim();
@@ -91,18 +104,8 @@ const VIDEO_CONVERTER = {
             return;
         }
         
-        // 视频链接格式简单验证
-        if (!videoUrl.includes('youtube') && 
-            !videoUrl.includes('youtu.be') && 
-            !videoUrl.includes('tiktok')) {
-            
-            // 简单验证，允许继续但显示警告
-            if (!confirm('链接似乎不是YouTube或TikTok链接。是否继续？')) {
-                return;
-            }
-        }
-        
         // 更新按钮状态
+        const originalBtnHtml = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 转换中...';
         btn.disabled = true;
         
@@ -114,7 +117,7 @@ const VIDEO_CONVERTER = {
                 // 根据result决定跳转
                 if (result.directToEdit) {
                     // 直接跳到编辑页面
-                    window.location.href = 'edit.html';
+                    window.location.href = 'edit.html?source=' + encodeURIComponent(videoUrl);
                 } else {
                     // 跳到转换页面
                     window.location.href = `convert.html?id=${result.id}&platform=${result.platform}&url=${encodeURIComponent(videoUrl)}`;
@@ -125,7 +128,7 @@ const VIDEO_CONVERTER = {
                 alert('转换失败: ' + error.message);
                 
                 // 恢复按钮状态
-                btn.innerHTML = '<i class="fas fa-bolt"></i> 转换';
+                btn.innerHTML = originalBtnHtml;
                 btn.disabled = false;
             });
     },
@@ -136,25 +139,28 @@ const VIDEO_CONVERTER = {
             // 显示加载状态
             this.showLoading(true, '准备转换...');
             
-            // 如果使用模拟数据，则不需要真实API调用
-            if (this.useMockData) {
-                console.log('使用模拟数据...');
-                
-                // 检测平台
-                let platform = 'Video';
-                if (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) {
-                    platform = 'YouTube';
-                } else if (videoUrl.includes('tiktok')) {
-                    platform = 'TikTok';
-                }
-                
-                // 生成随机ID
-                const randomId = 'mock-' + Math.random().toString(36).substring(2, 10);
-                
-                // 模拟API调用延迟
-                setTimeout(() => {
+            // 检测平台
+            let platform = 'Video';
+            if (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) {
+                platform = 'YouTube';
+            } else if (videoUrl.includes('tiktok')) {
+                platform = 'TikTok';
+            }
+            
+            // 生成随机ID
+            const randomId = 'mock-' + Math.random().toString(36).substring(2, 10);
+            
+            // 模拟API调用延迟
+            setTimeout(() => {
+                try {
                     // 生成并保存模拟数据
                     this.generateMockTranscription(videoUrl);
+                    
+                    // 验证数据是否成功保存
+                    const savedData = sessionStorage.getItem('transcription_result');
+                    if (!savedData) {
+                        throw new Error('无法保存转录数据，请检查浏览器设置');
+                    }
                     
                     // 隐藏加载状态
                     this.showLoading(false);
@@ -166,14 +172,11 @@ const VIDEO_CONVERTER = {
                         platform: platform,
                         directToEdit: false // 设置为true会直接跳到编辑页面，false会先显示转换过程
                     });
-                }, 1500);
-                
-                return;
-            }
-            
-            // 如果不使用模拟数据，这里应该进行真实的API调用
-            // 这部分代码在有真实API时实现
-            reject(new Error('真实API尚未实现，请设置useMockData为true'));
+                } catch (error) {
+                    this.showLoading(false);
+                    reject(error);
+                }
+            }, 1500);
         });
     },
     
@@ -204,9 +207,26 @@ const VIDEO_CONVERTER = {
             platform: platform
         };
         
-        // 保存到会话存储
-        sessionStorage.setItem('transcription_result', JSON.stringify(mockResult));
-        console.log('模拟数据已保存到sessionStorage');
+        try {
+            // 先清除可能存在的旧数据
+            sessionStorage.removeItem('transcription_result');
+            
+            // 保存到会话存储
+            const jsonData = JSON.stringify(mockResult);
+            sessionStorage.setItem('transcription_result', jsonData);
+            
+            console.log('模拟数据已保存到sessionStorage:', jsonData.substring(0, 100) + '...');
+            
+            // 额外验证存储是否成功
+            const savedData = sessionStorage.getItem('transcription_result');
+            if (!savedData) {
+                console.error('保存到sessionStorage失败');
+                throw new Error('存储失败');
+            }
+        } catch (error) {
+            console.error('存储错误:', error);
+            throw new Error('无法保存转录数据: ' + error.message);
+        }
     },
     
     // 开始转换监控
@@ -270,7 +290,7 @@ const VIDEO_CONVERTER = {
         
         // 模拟进度
         let progress = 0;
-        let step = 1;
+        let step = 0;
         
         // 步骤文本
         const steps = [
@@ -293,8 +313,14 @@ const VIDEO_CONVERTER = {
                 progress = 100;
                 clearInterval(interval);
                 
-                // 生成模拟转录结果
-                this.generateMockTranscription(url);
+                // 先检查是否已有数据
+                const existingData = sessionStorage.getItem('transcription_result');
+                
+                // 只有在没有数据时才生成
+                if (!existingData) {
+                    // 生成模拟转录结果
+                    this.generateMockTranscription(url);
+                }
                 
                 // 显示完成状态
                 this.showCompletionState();
@@ -313,7 +339,7 @@ const VIDEO_CONVERTER = {
                 step = currentStepIndex;
                 currentStep.textContent = steps[currentStepIndex];
             }
-        }, 500);
+        }, 300); // 加快模拟进度速度
     },
     
     // 更新时间显示
@@ -441,6 +467,23 @@ const VIDEO_CONVERTER = {
         }
     }
 };
+
+// 添加一个polyfill，以防浏览器不支持padStart
+if (!String.prototype.padStart) {
+    String.prototype.padStart = function padStart(targetLength, padString) {
+        targetLength = targetLength >> 0;
+        padString = String(typeof padString !== 'undefined' ? padString : ' ');
+        if (this.length >= targetLength) {
+            return String(this);
+        } else {
+            targetLength = targetLength - this.length;
+            if (targetLength > padString.length) {
+                padString += padString.repeat(targetLength / padString.length);
+            }
+            return padString.slice(0, targetLength) + String(this);
+        }
+    };
+}
 
 // 当DOM加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
