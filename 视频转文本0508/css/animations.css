@@ -1,10 +1,5 @@
-/* 
-* 视频转文本网站动画样式表
-* 作者: AI助手
-* 版本: 1.0
-*/
+/* Animations */
 
-/* 淡入淡出动画 */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -14,75 +9,17 @@
     }
 }
 
-.fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-/* 向上淡入动画 */
-@keyframes fadeInUp {
+@keyframes slideInUp {
     from {
+        transform: translateY(50px);
         opacity: 0;
-        transform: translateY(20px);
     }
     to {
-        opacity: 1;
         transform: translateY(0);
-    }
-}
-
-.fade-in-up {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-/* 向下淡入动画 */
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
         opacity: 1;
-        transform: translateY(0);
     }
 }
 
-.fade-in-down {
-    animation: fadeInDown 0.6s ease-out;
-}
-
-/* 向左淡入动画 */
-@keyframes fadeInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.fade-in-left {
-    animation: fadeInLeft 0.6s ease-out;
-}
-
-/* 向右淡入动画 */
-@keyframes fadeInRight {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.fade-in-right {
-    animation: fadeInRight 0.6s ease-out;
-}
-
-/* 脉冲动画 */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -95,211 +32,122 @@
     }
 }
 
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.slide-in-up {
+    animation: slideInUp 0.5s ease forwards;
+}
+
 .pulse {
     animation: pulse 2s infinite;
 }
 
-/* 旋转动画 */
+/* Element Transitions */
+.header {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tab-btn {
+    transition: all 0.3s ease;
+}
+
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pricing-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover Effects */
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.social-links a:hover {
+    transform: translateY(-3px);
+}
+
+/* Loading Animation for Convert Button */
 @keyframes spin {
-    from {
+    0% {
         transform: rotate(0deg);
     }
-    to {
+    100% {
         transform: rotate(360deg);
     }
 }
 
-.spin {
-    animation: spin 1s linear infinite;
+.fa-spinner {
+    animation: spin 1s infinite linear;
 }
 
-/* 进度条动画 */
-@keyframes progress {
-    from {
-        width: 0%;
-    }
-    to {
-        width: 100%;
-    }
-}
-
-.progress-animation {
-    animation: progress 2s linear;
-}
-
-/* 振动动画 */
-@keyframes shake {
-    0%, 100% {
-        transform: translateX(0);
-    }
-    10%, 30%, 50%, 70%, 90% {
-        transform: translateX(-5px);
-    }
-    20%, 40%, 60%, 80% {
-        transform: translateX(5px);
-    }
-}
-
-.shake {
-    animation: shake 0.8s ease-in-out;
-}
-
-/* 弹跳动画 */
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-20px);
-    }
-    60% {
-        transform: translateY(-10px);
-    }
-}
-
-.bounce {
-    animation: bounce 2s infinite;
-}
-
-/* 渐变背景动画 */
-@keyframes gradientBG {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-.gradient-bg {
-    background: linear-gradient(270deg, #3498db, #2ecc71, #e74c3c);
-    background-size: 600% 600%;
-    animation: gradientBG 10s ease infinite;
-}
-
-/* 转换页面的加载动画 */
-.loading-circle {
-    display: inline-block;
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(52, 152, 219, 0.2);
-    border-radius: 50%;
-    border-top-color: var(--primary-color);
-    animation: spin 1s linear infinite;
-}
-
-/* 文件上传成功动画 */
-@keyframes checkmark {
-    0% {
-        stroke-dashoffset: 100;
-    }
-    100% {
-        stroke-dashoffset: 0;
-    }
-}
-
-.checkmark {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: block;
-    stroke-width: 2;
-    stroke: var(--success-color);
-    stroke-miterlimit: 10;
-    margin: 10% auto;
-    box-shadow: inset 0px 0px 0px var(--success-color);
-}
-
-.checkmark-circle {
-    stroke-dasharray: 166;
-    stroke-dashoffset: 166;
-    stroke-width: 2;
-    stroke-miterlimit: 10;
-    stroke: var(--success-color);
-    fill: none;
-    animation: checkmark 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
-}
-
-.checkmark-check {
-    transform-origin: 50% 50%;
-    stroke-dasharray: 48;
-    stroke-dashoffset: 48;
-    animation: checkmark 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
-}
-
-/* Tab切换动画 */
+/* Tab Transitions */
 .tab-content {
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.3s ease;
 }
 
 .tab-content.active {
-    opacity: 1;
-    transform: translateY(0);
+    animation: fadeIn 0.5s ease;
 }
 
-/* 平滑滚动动画 */
-.smooth-scroll {
-    transition: scroll-behavior 0.5s ease;
+/* Menu Toggle Animation */
+.mobile-menu-toggle span {
+    transition: all 0.3s ease;
 }
 
-/* 悬停缩放效果 */
-.hover-scale {
+/* Additional Animations for Page Elements */
+@keyframes floatUp {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.feature-icon {
+    animation: floatUp 3s ease infinite;
+}
+
+/* Staggered Animation for Features Grid */
+.features-grid .feature-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.features-grid .feature-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.features-grid .feature-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.features-grid .feature-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+/* FAQ Animation */
+.faq-question::after {
     transition: transform 0.3s ease;
 }
 
-.hover-scale:hover {
-    transform: scale(1.05);
+.faq-item.active .faq-question::after {
+    transform: translateY(-50%) rotate(180deg);
 }
 
-/* 悬停阴影效果 */
-.hover-shadow {
-    transition: box-shadow 0.3s ease;
+/* Hero Button Animation */
+.hero-buttons .btn {
+    animation: pulse 2s infinite;
 }
 
-.hover-shadow:hover {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+.hero-buttons .btn:hover {
+    animation: none;
+    transform: translateY(-3px);
 }
-
-/* 按钮点击动画 */
-.btn {
-    position: relative;
-    overflow: hidden;
-}
-
-.btn:after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.5);
-    opacity: 0;
-    border-radius: 100%;
-    transform: scale(1, 1) translate(-50%);
-    transform-origin: 50% 50%;
-}
-
-.btn:focus:not(:active)::after {
-    animation: ripple 1s ease-out;
-}
-
-@keyframes ripple {
-    0% {
-        transform: scale(0, 0);
-        opacity: 0.5;
-    }
-    20% {
-        transform: scale(25, 25);
-        opacity: 0.3;
-    }
-    100% {
-        opacity: 0;
-        transform: scale(40, 40);
-    }
-} 
