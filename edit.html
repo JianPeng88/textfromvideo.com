@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Transcription - textfromvideo.com</title>
+    <meta name="description" content="Edit your video transcription, add timestamps, and download in multiple formats">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <!-- Font icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@deepgram/sdk"></script>
+    <style>
+        /* Edit page specific styles */
+        .edit-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .edit-title h1 {
+            font-size: 1.8rem;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+        
+        .edit-title p {
+            color: var(--light-text);
+            font-size: 0.95rem;
+        }
+        
+        .edit-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .edit-main {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .editor-section {
+            flex: 2;
+        }
+        
+        .timestamps-section {
+            flex: 1;
+            max-width: 350px;
+        }
+        
+        .editor-toolbar {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .toolbar-btn {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--dark-color);
+            transition: all 0.2s ease;
+        }
+        
+        .toolbar-btn:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-color);
+        }
+        
+        .editor-container {
+            position: relative;
+        }
+        
+        #text-editor {
+            width: 100%;
+            min-height: 500px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: vertical;
+        }
+        
+        .editor-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .stat-number {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-right: 5px;
+        }
+        
+        .timestamps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .timestamps-header h3 {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+            margin: 0;
+        }
+        
+        .timestamps-container {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        .timestamps-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .timestamp-item {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .timestamp-item:hover {
+            background-color: rgba(30, 136, 229, 0.05);
+        }
+        
+        .timestamp-item:last-child {
+            border-bottom: none;
+        }
+        
+        .timestamp-time {
+            width: 80px;
+            padding: 12px 10px;
+            background-color: var(--light-bg);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .timestamp-text {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: var(--text-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .video-link-converter {
+            margin-top: 30px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            background-color: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: var(--dark-color);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            background-color: var(--light-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .download-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .download-option {
+            width: calc(50% - 8px);
+            background-color: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .download-option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(30, 136, 229, 0.05);
+        }
+        
+        .download-option:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .download-option i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .download-option h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .download-option p {
+            margin: 5px 0 0;
+            font-size: 0.85rem;
+            color: var(--light-text);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .form-check input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        .format-description {
+            font-size: 0.9rem;
+            color: var(--light-text);
+            margin-top: 5px;
+        }
+        
+        /* Success Actions */
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 991.98px) {
+            .edit-main {
+                flex-direction: column;
+            }
+            
+            .timestamps-section {
+                max-width: none;
+            }
+        }
+        
+        @media (max-width: 575.98px) {
+            .edit-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .download-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <h1>textfromvideo</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-outline">Login</a>
+                <a href="#" class="btn btn-primary">Sign Up</a>
+            </div>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Edit Section -->
+    <div class="edit-container">
+        <div class="edit-header">
+            <div class="edit-title">
+                <h1>Edit Transcription</h1>
+                <p>Edit the text, add timestamps, or make any necessary corrections</p>
+            </div>
+            <div class="edit-actions">
+                <button id="save-btn" class="btn btn-outline">Save Edits</button>
+                <button id="download-btn" class="btn btn-primary">Download</button>
+            </div>
+        </div>
+        
+        <div class="edit-main">
+            <div class="editor-section">
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" title="Bold"><i class="fas fa-bold"></i></button>
+                    <button class="toolbar-btn" title="Italic"><i class="fas fa-italic"></i></button>
+                    <button class="toolbar-btn" title="Underline"><i class="fas fa-underline"></i></button>
+                    <button class="toolbar-btn" title="Clear Formatting"><i class="fas fa-remove-format"></i></button>
+                    <button class="toolbar-btn" title="Add Timestamp"><i class="fas fa-clock"></i></button>
+                    <button class="toolbar-btn" title="Select All"><i class="fas fa-check-double"></i></button>
+                    <button id="undo-btn" class="toolbar-btn" title="Undo"><i class="fas fa-undo"></i></button>
+                </div>
+                <div class="editor-container">
+                    <textarea id="text-editor" placeholder="Transcription text will appear here..."></textarea>
+                </div>
+                <div class="editor-stats">
+                    <div>Words: <span id="word-count" class="stat-number">0</span></div>
+                    <div>Paragraphs: <span id="paragraph-count" class="stat-number">0</span></div>
+                    <div>Reading Time: <span id="reading-time" class="stat-number">0</span> min</div>
+                </div>
+            </div>
+            
+            <div class="timestamps-section">
+                <div class="timestamps-header">
+                    <h3>Timestamps</h3>
+                    <small>Click on a timestamp to navigate to that point in the text</small>
+                </div>
+                <div class="timestamps-container">
+                    <div class="timestamps-list">
+                        <!-- Timestamps will be added here dynamically -->
+                        <div class="timestamp-item">
+                            <div class="timestamp-time">00:00:00</div>
+                            <div class="timestamp-text">No timestamps available yet.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video Link Converter -->
+                <div class="video-link-converter">
+                    <div class="converter-inner">
+                        <div class="converter-content">
+                            <h3>Convert Another Video</h3>
+                            <p>Paste YouTube or TikTok link to convert</p>
+                            <div class="link-input-container">
+                                <input type="text" class="link-input" placeholder="https://www.youtube.com/watch?v=...">
+                                <button class="convert-btn">
+                                    <i class="fas fa-bolt"></i> Convert
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Download Modal -->
+    <div id="download-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Download Options</h2>
+            </div>
+            <div class="modal-body">
+                <div class="download-options">
+                    <div class="download-option selected" data-format="txt">
+                        <i class="far fa-file-alt"></i>
+                        <h4>Plain Text</h4>
+                        <p>Simple TXT format</p>
+                    </div>
+                    <div class="download-option" data-format="docx">
+                        <i class="far fa-file-word"></i>
+                        <h4>Word Document</h4>
+                        <p>Microsoft Word format</p>
+                    </div>
+                    <div class="download-option" data-format="pdf">
+                        <i class="far fa-file-pdf"></i>
+                        <h4>PDF Document</h4>
+                        <p>Portable Document Format</p>
+                    </div>
+                    <div class="download-option" data-format="srt">
+                        <i class="far fa-closed-captioning"></i>
+                        <h4>Subtitle File</h4>
+                        <p>SRT format for videos</p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="filename-input">File Name</label>
+                    <input type="text" id="filename-input" placeholder="Video Transcription" value="Video Transcription">
+                </div>
+                
+                <div class="form-check">
+                    <input type="checkbox" id="timestamp-checkbox">
+                    <label for="timestamp-checkbox">Include timestamps in the document</label>
+                </div>
+                
+                <p class="format-description">
+                    <i class="fas fa-info-circle"></i> Selected format: <span id="selected-format-desc">Plain Text (TXT) - Simple text file that can be opened in any text editor.</span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-download" class="btn btn-outline">Cancel</button>
+                <button id="confirm-download" class="btn btn-primary">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/videoConverter.js"></script>
+    <script>
+
+        
+    document.addEventListener('DOMContentLoaded', function() {
+            // 从sessionStorage获取转录结果
+            const transcriptionData = sessionStorage.getItem('transcription_result');
+            
+            if (transcriptionData) {
+                try {
+                    const transcriptionResult = JSON.parse(transcriptionData);
+                    const text = transcriptionResult.text || '';
+                    const segments = transcriptionResult.segments || [];
+                    const textEditor = document.getElementById('text-editor');
+                    
+                    // 填充文本编辑器
+                    if (textEditor) {
+                        textEditor.value = text;
+                        // 触发输入事件以更新统计信息
+                        const inputEvent = new Event('input');
+                        textEditor.dispatchEvent(inputEvent);
+                    }
+                    
+                    // 填充时间戳区域
+                    if (segments && segments.length > 0) {
+                        const timestampsList = document.querySelector('.timestamps-list');
+                        if (timestampsList) {
+                            timestampsList.innerHTML = ''; // 清空现有内容
+                            
+                            segments.forEach(segment => {
+                                // 创建时间戳项
+                                const item = document.createElement('div');
+                                item.className = 'timestamp-item';
+                                
+                                // 格式化时间
+                                const startTime = formatTime(segment.start);
+                                
+                                item.innerHTML = `
+                                    <div class="timestamp-time">${startTime}</div>
+                                    <div class="timestamp-text">${segment.text}</div>
+                                `;
+                                
+                                // 点击时间戳跳转到文本位置
+                                item.addEventListener('click', function() {
+                                    const segmentText = segment.text.trim();
+                                    if (segmentText && textEditor) {
+                                        const fullText = textEditor.value;
+                                        const position = fullText.indexOf(segmentText);
+                                        if (position !== -1) {
+                                            textEditor.focus();
+                                            textEditor.setSelectionRange(position, position + segmentText.length);
+                                            textEditor.scrollTop = position / fullText.length * textEditor.scrollHeight;
+                                        }
+                                    }
+                                });
+                                
+                                timestampsList.appendChild(item);
+                            });
+                        }
+                    } else {
+                        console.log('No segments found in transcription data:', transcriptionResult);
+                    }
+                } catch (error) {
+                    console.error('Error parsing transcription data:', error);
+                }
+            } else {
+                console.log('No transcription data found in sessionStorage');
+                // 检查URL参数
+                const urlParams = new URLSearchParams(window.location.search);
+                const videoSource = urlParams.get('source');
+                
+                if (videoSource) {
+                    console.log('Found video source in URL:', videoSource);
+                    // 如果有source参数但没有已有的转录结果，添加链接到编辑器
+                    const textEditor = document.getElementById('text-editor');
+                    if (textEditor) {
+                        const platform = videoSource.includes('youtube') ? 'YouTube' : 
+                                        videoSource.includes('tiktok') ? 'TikTok' : 'Video';
+                        
+                        textEditor.value = `[Transcription from ${platform} video: ${videoSource}]\n\n`;
+                        // 触发输入事件以更新统计信息
+                        const inputEvent = new Event('input');
+                        textEditor.dispatchEvent(inputEvent);
+                    }
+                }
+            }
+            
+            // 初始化编辑器功能
+            initEditor();
+            
+            // 初始化移动菜单
+            initMobileMenu();
+            
+            // 初始化下载模态框
+            initDownloadModal();
+            
+            // 初始化视频链接转换器
+            initVideoLinkConverter();
+        });
+
+
+        /**
+         * 格式化时间（秒 -> 时:分:秒）
+         * @param {number} seconds - 秒数
+         * @returns {string} - 格式化的时间
+         */
+        function formatTime(seconds) {
+            if (typeof seconds !== 'number') {
+                return '00:00:00';
+            }
+            
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        /**
+         * 初始化编辑器功能
+         */
+        function initEditor() {
+            const textEditor = document.getElementById('text-editor');
+            const wordCount = document.getElementById('word-count');
+            const paragraphCount = document.getElementById('paragraph-count');
+            const readingTime = document.getElementById('reading-time');
+            const saveBtn = document.getElementById('save-btn');
+            const undoBtn = document.getElementById('undo-btn');
+            
+            // 初始统计计算
+            if (textEditor) {
+                updateStats(textEditor.value);
+                
+                // 文本修改时更新统计
+                textEditor.addEventListener('input', function() {
+                    updateStats(this.value);
+                });
+            }
+            
+            // 保存按钮
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function() {
+                    // 在实际项目中，这里应该执行真实的保存操作
+                    this.innerHTML = '<i class="fas fa-check"></i> Saved';
+                    this.classList.add('btn-success');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = 'Save Edits';
+                        this.classList.remove('btn-success');
+                    }, 2000);
+                });
+            }
+            
+            // 撤销按钮
+            if (undoBtn) {
+                undoBtn.addEventListener('click', function() {
+                    document.execCommand('undo');
+                });
+            }
+            
+            // 工具栏按钮
+            const toolbarButtons = document.querySelectorAll('.toolbar-btn');
+            toolbarButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.getAttribute('title');
+                    
+                    switch(action) {
+                        case 'Bold':
+                            applyTextStyle('bold');
+                            break;
+                        case 'Italic':
+                            applyTextStyle('italic');
+                            break;
+                        case 'Underline':
+                            applyTextStyle('underline');
+                            break;
+                        case 'Clear Formatting':
+                            clearFormatting();
+                            break;
+                        case 'Add Timestamp':
+                            insertTimeStamp();
+                            break;
+                        case 'Select All':
+                            textEditor.select();
+                            break;
+                    }
+                });
+            });
+        }
+
+        /**
+         * 更新文本统计
+         * @param {string} text - 文本内容
+         */
+        function updateStats(text) {
+            const wordCount = document.getElementById('word-count');
+            const paragraphCount = document.getElementById('paragraph-count');
+            const readingTime = document.getElementById('reading-time');
+            
+            // 计算单词数
+            const words = text.trim().split(/\s+/);
+            const totalWordCount = words.length > 0 && words[0] !== '' ? words.length : 0;
+            
+            // 计算段落数
+            const paragraphs = text.split('\n').filter(p => p.trim() !== '');
+            
+            // 计算阅读时间（假设平均阅读速度为每分钟300个单词）
+            const minutes = Math.max(1, Math.ceil(totalWordCount / 300));
+            
+            // 更新显示
+            if (wordCount) wordCount.textContent = totalWordCount;
+            if (paragraphCount) paragraphCount.textContent = paragraphs.length;
+            if (readingTime) readingTime.textContent = minutes;
+        }
+
+        /**
+         * 应用文本样式
+         * @param {string} style - 样式类型
+         */
+        function applyTextStyle(style) {
+            const textEditor = document.getElementById('text-editor');
+            if (!textEditor) return;
+            
+            const selection = {
+                start: textEditor.selectionStart,
+                end: textEditor.selectionEnd,
+                text: textEditor.value.substring(textEditor.selectionStart, textEditor.selectionEnd)
+            };
+            
+            if (selection.start === selection.end) return;
+            
+            let formattedText = selection.text;
+            let prefix = '', suffix = '';
+            
+            switch(style) {
+                case 'bold':
+                    prefix = '**';
+                    suffix = '**';
+                    break;
+                case 'italic':
+                    prefix = '_';
+                    suffix = '_';
+                    break;
+                case 'underline':
+                    prefix = '__';
+                    suffix = '__';
+                    break;
+            }
+            
+            // 如果已有格式则移除
+            if (formattedText.startsWith(prefix) && formattedText.endsWith(suffix)) {
+                formattedText = formattedText.substring(prefix.length, formattedText.length - suffix.length);
+            } else {
+                formattedText = prefix + formattedText + suffix;
+            }
+            
+            // 替换文本
+            textEditor.value = textEditor.value.substring(0, selection.start) + 
+                            formattedText + 
+                            textEditor.value.substring(selection.end);
+            
+            // 保持选择状态
+            textEditor.focus();
+            textEditor.setSelectionRange(selection.start, selection.start + formattedText.length);
+        }
+
+        /**
+         * 清除文本格式
+         */
+        function clearFormatting() {
+            const textEditor = document.getElementById('text-editor');
+            if (!textEditor) return;
+            
+            const selection = {
+                start: textEditor.selectionStart,
+                end: textEditor.selectionEnd,
+                text: textEditor.value.substring(textEditor.selectionStart, textEditor.selectionEnd)
+            };
+            
+            if (selection.start === selection.end) return;
+            
+            // 移除所有格式标记
+            let cleanText = selection.text
+                .replace(/(\*\*|__)(.*?)\1/g, '$2')
+                .replace(/(_)(.*?)\1/g, '$2');
+            
+            // 替换文本
+            textEditor.value = textEditor.value.substring(0, selection.start) + 
+                            cleanText + 
+                            textEditor.value.substring(selection.end);
+// 保持选择状态
+            textEditor.focus();
+            textEditor.setSelectionRange(selection.start, selection.start + cleanText.length);
+        }
+
+        /**
+         * 插入时间戳
+         */
+        function insertTimeStamp() {
+            const textEditor = document.getElementById('text-editor');
+            if (!textEditor) return;
+            
+            const cursorPos = textEditor.selectionStart;
+            
+            // 生成时间戳
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timestamp = `[${hours}:${minutes}:${seconds}] `;
+            
+            // 在光标位置插入时间戳
+            textEditor.value = textEditor.value.substring(0, cursorPos) + 
+                            timestamp + 
+                            textEditor.value.substring(cursorPos);
+            
+            // 重定位光标
+            textEditor.focus();
+            textEditor.setSelectionRange(cursorPos + timestamp.length, cursorPos + timestamp.length);
+        }
+
+        /**
+         * 初始化移动菜单
+         */
+        function initMobileMenu() {
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            const mainNav = document.querySelector('.main-nav');
+            
+            if (menuToggle && mainNav) {
+                menuToggle.addEventListener('click', function() {
+                    mainNav.classList.toggle('active');
+                    
+                    // 切换汉堡菜单图标
+                    const spans = menuToggle.querySelectorAll('span');
+                    spans.forEach(span => span.classList.toggle('active'));
+                    
+                    if (mainNav.classList.contains('active')) {
+                        // X形状
+                        spans[0].style.transform = 'translateY(9px) rotate(45deg)';
+                        spans[1].style.opacity = '0';
+                        spans[2].style.transform = 'translateY(-9px) rotate(-45deg)';
+                    } else {
+                        // 恢复原始状态
+                        spans[0].style.transform = 'none';
+                        spans[1].style.opacity = '1';
+                        spans[2].style.transform = 'none';
+                    }
+                });
+            }
+        }
+
+        /**
+         * 初始化下载模态框
+         */
+        function initDownloadModal() {
+            const downloadBtn = document.getElementById('download-btn');
+            const downloadModal = document.getElementById('download-modal');
+            const cancelDownload = document.getElementById('cancel-download');
+            const confirmDownload = document.getElementById('confirm-download');
+            const downloadOptions = document.querySelectorAll('.download-option');
+            const selectedFormatDesc = document.getElementById('selected-format-desc');
+            
+            let selectedFormat = 'txt';
+            
+            // 初始化格式描述
+            const formatDescriptions = {
+                'txt': 'Plain Text (TXT) - Simple text file that can be opened in any text editor.',
+                'docx': 'Word Document (DOCX) - Microsoft Word format with rich text formatting.',
+                'pdf': 'PDF Document (PDF) - Format that preserves document formatting across devices.',
+                'srt': 'Subtitle File (SRT) - Standard subtitle format used for videos.'
+            };
+            
+            // 显示模态框
+            if (downloadBtn && downloadModal) {
+                downloadBtn.addEventListener('click', function() {
+                    downloadModal.style.display = 'flex';
+                });
+            }
+            
+            // 关闭模态框
+            if (cancelDownload && downloadModal) {
+                cancelDownload.addEventListener('click', function() {
+                    downloadModal.style.display = 'none';
+                });
+            }
+            
+            // 点击背景关闭模态框
+            if (downloadModal) {
+                downloadModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            }
+            
+            // 选择下载格式
+            if (downloadOptions) {
+                downloadOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        downloadOptions.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedFormat = this.getAttribute('data-format');
+                        
+                        // 更新格式描述
+                        if (selectedFormatDesc && formatDescriptions[selectedFormat]) {
+                            selectedFormatDesc.textContent = formatDescriptions[selectedFormat];
+                        }
+                    });
+                });
+            }
+            
+            // 确认下载
+            if (confirmDownload) {
+                confirmDownload.addEventListener('click', function() {
+                    const filename = document.getElementById('filename-input').value || 'Video Transcription';
+                    const includeTimestamp = document.getElementById('timestamp-checkbox').checked;
+                    const textContent = document.getElementById('text-editor').value;
+                    
+                    // 格式消息
+                    const formatMessages = {
+                        'txt': 'Plain text file downloaded successfully!',
+                        'docx': 'Word document downloaded successfully!',
+                        'pdf': 'PDF document downloaded successfully!',
+                        'srt': 'Subtitle file downloaded successfully!'
+                    };
+                    
+                    // 实际项目中，这会调用适当的API生成不同文件格式
+                    simulateDownload(filename, selectedFormat, textContent);
+                    
+                    // 显示成功消息
+                    alert(formatMessages[selectedFormat]);
+                    
+                    // 关闭模态框
+                    downloadModal.style.display = 'none';
+                });
+            }
+        }
+
+        /**
+         * 模拟文件下载
+         * @param {string} filename - 文件名
+         * @param {string} format - 文件格式
+         * @param {string} content - 文件内容
+         */
+        function simulateDownload(filename, format, content) {
+            // 在实际项目中，这会处理不同格式的处理
+            // 目前实现简单的TXT下载作为示例
+            
+            if (format === 'txt') {
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename + '.txt';
+                document.body.appendChild(a);
+                a.click();
+                URL.revokeObjectURL(url);
+                a.remove();
+            } else {
+                // 其他格式在实际项目中需要专用库或API
+                console.log(`Downloading ${format} format file: ${filename}`);
+            }
+        }
+
+        /**
+         * 初始化视频链接转换器
+         */
+        function initVideoLinkConverter() {
+            const convertBtn = document.querySelector('.convert-btn');
+            const linkInput = document.querySelector('.link-input');
+            
+            if (convertBtn && linkInput) {
+                convertBtn.addEventListener('click', function() {
+                    const videoUrl = linkInput.value.trim();
+                    if (!videoUrl) {
+                        alert('Please enter a YouTube or TikTok video link');
+                        return;
+                    }
+                    
+                    // 显示加载状态
+                    convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Converting...';
+                    convertBtn.disabled = true;
+                    
+                    // 模拟转换过程
+                    setTimeout(() => {
+                        // 将链接信息显示在编辑区
+                        const textEditor = document.getElementById('text-editor');
+                        if (textEditor) {
+                            const platform = videoUrl.includes('youtube') ? 'YouTube' : 
+                                            videoUrl.includes('tiktok') ? 'TikTok' : 'Video';
+                            
+                            textEditor.value = `[Transcription from ${platform} video: ${videoUrl}]\n\n` + textEditor.value;
+                            
+                            // 更新文本统计
+                            updateStats(textEditor.value);
+                            
+                            // 还原按钮状态
+                            convertBtn.innerHTML = '<i class="fas fa-bolt"></i> Convert';
+                            convertBtn.disabled = false;
+                            
+                            // 清空输入框
+                            linkInput.value = '';
+                            
+                            // 提示信息
+                            alert('Video has been processed! Text is now available in the editor.');
+                        }
+                    }, 2000);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
