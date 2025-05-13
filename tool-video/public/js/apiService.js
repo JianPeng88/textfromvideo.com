@@ -3,7 +3,7 @@
  * 用于前端与后端API通信
  */
 
-const API_BASE_URL = 'http://1.95.4.88/api';
+const API_BASE_URL = 'https://xyz86.top/aitool/api';
 
 /**
  * 解析YouTube视频链接
