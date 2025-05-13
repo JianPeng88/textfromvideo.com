@@ -16,12 +16,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initHomePageConverter();
     
     // 如果在转换页面，检查URL参数并开始转换
-    if (window.location.pathname.includes('convert.html')) {
+    if (window.location.pathname.includes('convert')) {
         initConversionPage();
     }
     
     // 如果在编辑页面，初始化编辑器功能
-    if (window.location.pathname.includes('edit.html')) {
+    if (window.location.pathname.includes('edit')) {
         initEditPage();
     }
 });
