@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video to Text Converter</title>
+    <meta name="description" content="Video to text processing in progress, please wait">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <!-- Font icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@deepgram/sdk"></script>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2D0HL98RMQ"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-2D0HL98RMQ');
+</script>
+
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <h1>textfromvideo</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-outline">Login</a>
+                <a href="#" class="btn btn-primary">Sign Up</a>
+            </div>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conversion Status -->
+    <section class="conversion-section">
+        <div class="container">
+            <div class="conversion-card">
+                <div class="conversion-header">
+                    <h2>Video to Text Converter</h2>
+                    <p>Converting your video to text, please wait...</p>
+                </div>
+
+                <div class="conversion-progress">
+                    <div class="progress-animation">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 5%;"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span>Processing video</span>
+                        <span id="progress-percent">5%</span>
+                    </div>
+                </div>
+
+                <div class="conversion-time">
+                    <div class="time-item">
+                        <span class="processed-duration">processing...</span>
+                        <p>Processed Duration</p>
+                    </div>
+                    <div class="time-item">
+                        <span class="total-duration">gettingIn...</span>
+                        <p>Total Duration</p>
+                    </div>
+                    <div class="time-item">
+                        <span class="estimated-time">calculating...</span>
+                        <p>Estimated Time Left</p>
+                    </div>
+                </div>
+
+                <div class="video-info">
+                    <div class="info-row">
+                        <div class="info-label">File Name</div>
+                        <div class="info-value" id="file-name">https://www.youtube.com/shorts/1Vo0GD8wpZY</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">File Size</div>
+                        <div class="info-value" id="file-size">YouTube Video</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Current Step</div>
+                        <div class="info-value" id="current-step">Analyzing speech content...</div>
+                    </div>
+                </div>
+
+                <div class="conversion-actions">
+                    <button class="btn btn-outline cancel-btn">Cancel Conversion</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section (Simplified) -->
+    <footer class="footer footer-light">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 textfromvideo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/apiService.js"></script>
+    <script src="js/videoConverter.js"></script>
+
+    <style>
+        .conversion-section {
+            padding: 60px 0;
+            min-height: calc(100vh - 250px);
+            display: flex;
+            align-items: center;
+            background-color: #f5f7fa;
+        }
+
+        .conversion-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .conversion-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .conversion-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .conversion-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .progress-animation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #3498db;
+            border-radius: 50%;
+            margin: 0 6px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        .conversion-time {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .time-item span {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3498db;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .time-item p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .video-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            width: 120px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .info-value {
+            flex: 1;
+            color: #333;
+            word-break: break-all;
+        }
+
+        .conversion-actions {
+            text-align: center;
+        }
+
+        .cancel-btn {
+            padding: 10px 30px;
+        }
+
+        .footer-light {
+            background-color: #f5f7fa;
+            border-top: 1px solid #e0e0e0;
+            padding: 20px 0;
+        }
+
+        .footer-bottom {
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .conversion-card {
+                padding: 20px;
+            }
+
+            .conversion-time {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .info-row {
+                flex-direction: column;
+            }
+
+            .info-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2D0HL98RMQ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-2D0HL98RMQ');
+    </script>
+
+</body>
+
+</html>
