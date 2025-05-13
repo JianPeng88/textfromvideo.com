@@ -392,7 +392,7 @@ function testConversion() {
     sessionStorage.setItem('transcription_result', JSON.stringify(mockResult));
     
     // 跳转到编辑页面
-    window.location.href = 'edit.html';
+    //window.location.href = 'edit.html';
 }
 
 /**

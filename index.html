@@ -12,6 +12,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@deepgram/sdk"></script>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2D0HL98RMQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-2D0HL98RMQ');
+</script>
 <body>
     <!-- Header Navigation -->
     <header class="header">
@@ -23,6 +32,7 @@
             </div>
             <nav class="main-nav">
                 <ul>
+                    <li><a href="tool-video/index.html">Down Tool</a></li>
                     <li><a href="#features">Features</a></li>
                     <li><a href="#how-it-works">How It Works</a></li>
                     <li><a href="#pricing">Pricing</a></li>
@@ -76,11 +86,11 @@
                             </button>
                         </div>
                         <div class="platform-badges">
-                            <span class="platform-badge youtube">
+                           <!-- <span class="platform-badge youtube">
                                 <i class="fab fa-youtube"></i> YouTube
-                            </span>
+                            </span> -->
                             <span class="platform-badge tiktok">
-                                <i class="fab fa-tiktok"></i> TikTok
+                                Support YouTube, TikTok, X, Ins, reddit and hundreds of other video links Video/Audio Download
                             </span>
                         </div>
                     </div>
@@ -670,37 +680,49 @@
             }
             
             // 初始化视频链接转换功能
-            initVideoLinkConverter();
+            // initVideoLinkConverter();
         });
         
         /**
          * 初始化视频链接转换功能
          */
-        function initVideoLinkConverter() {
-            const convertBtn = document.querySelector('.convert-btn');
-            const linkInput = document.querySelector('.link-input');
+        // function initVideoLinkConverter() {
+        //     const convertBtn = document.querySelector('.convert-btn');
+        //     const linkInput = document.querySelector('.link-input');
             
-            if (convertBtn && linkInput) {
-                convertBtn.addEventListener('click', function() {
-                    const videoUrl = linkInput.value.trim();
-                    if (!videoUrl) {
-                        alert('Please enter a YouTube or TikTok video link');
-                        return;
-                    }
+        //     if (convertBtn && linkInput) {
+        //         convertBtn.addEventListener('click', function() {
+        //             const videoUrl = linkInput.value.trim();
+        //             if (!videoUrl) {
+        //                 alert('Please enter a YouTube or TikTok video link 111');
+        //                 return;
+        //             }
                     
-                    // 显示加载状态
-                    convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Converting...';
-                    convertBtn.disabled = true;
+        //             // 显示加载状态
+        //             convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Converting...';
+        //             convertBtn.disabled = true;
                     
-                    // 模拟转换过程
-                    setTimeout(() => {
-                        // 转换完成，跳转到编辑页面
-                        window.location.href = 'edit.html?source=' + encodeURIComponent(videoUrl);
-                    }, 2000);
-                });
-            }
-        }
+        //             // 模拟转换过程
+        //             setTimeout(() => {
+        //                 // 转换完成，跳转到编辑页面
+        //                 window.location.href = 'edit.html?source=' + encodeURIComponent(videoUrl);
+        //             }, 2000);
+        //         });
+        //     }
+        // }
     </script>
+<script src="js/apiService.js"></script>
 <script src="js/videoConverter.js"></script>
 </body>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2D0HL98RMQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-2D0HL98RMQ');
+    </script>
+
 </html> 

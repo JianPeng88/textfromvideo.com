@@ -1,506 +1,366 @@
 /**
- * 视频链接转换功能 - 修复版
- * 文件: js/videoConverter.js
+ * 视频转文本功能实现
+ * 集成Deepgram API进行语音识别
  */
 
-// 全局配置
-const VIDEO_CONVERTER = {
-    // 始终使用模拟数据（无需API调用，确保功能可用）
-    useMockData: true,
+// Deepgram API密钥 - 实际使用时请替换为您的密钥
+const DEEPGRAM_API_KEY = 'YOUR_DEEPGRAM_API_KEY'; 
+
+// 初始化全局变量
+let videoSource = null;
+let convertInProgress = false;
+
+// 页面加载完成后初始化功能
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化首页视频链接转换
+    initHomePageConverter();
     
-    // 模拟处理时间（毫秒）
-    mockProcessingTime: 3000,
+    // 如果在转换页面，检查URL参数并开始转换
+    if (window.location.pathname.includes('convert.html')) {
+        initConversionPage();
+    }
     
-    // 初始化函数
-    init: function() {
-        console.log('视频转换器初始化...');
-        this.setupEventListeners();
-    },
+    // 如果在编辑页面，初始化编辑器功能
+    if (window.location.pathname.includes('edit.html')) {
+        initEditPage();
+    }
+});
+
+/**
+ * 初始化首页转换器功能
+ */
+function initHomePageConverter() {
+    const convertBtn = document.querySelector('.convert-btn');
+    const linkInput = document.querySelector('.link-input');
     
-    // 设置事件监听
-    setupEventListeners: function() {
-        // 首页的链接转换按钮
-        const convertBtns = document.querySelectorAll('.convert-btn');
-        
-        convertBtns.forEach(btn => {
-            btn.addEventListener('click', this.handleConvertButtonClick.bind(this));
-        });
-        
-        // 首页链接输入框的回车键处理
-        const linkInputs = document.querySelectorAll('.link-input');
-        linkInputs.forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    // 找到相关的转换按钮并触发点击
-                    const parentContainer = input.closest('.link-input-container, .video-link-converter');
-                    if (parentContainer) {
-                        const convertBtn = parentContainer.querySelector('.convert-btn');
-                        if (convertBtn) convertBtn.click();
-                    }
-                }
-            });
-        });
-        
-        // 检查当前页面的功能
-        this.checkCurrentPageFunctions();
-    },
-    
-    // 检查当前页面并初始化相关功能
-    checkCurrentPageFunctions: function() {
-        const currentPath = window.location.pathname;
-        
-        // 提取页面名称，处理各种路径格式
-        const pageName = currentPath.split('/').pop() || 'index.html';
-        
-        if (pageName.includes('convert.html') || pageName === 'convert') {
-            // 在转换页面，启动转换状态监控
-            this.startConversionMonitoring();
-        } else if (pageName.includes('edit.html') || pageName === 'edit') {
-            // 在编辑页面，检查是否有来自URL的视频链接
-            const urlParams = new URLSearchParams(window.location.search);
-            const videoSource = urlParams.get('source') || urlParams.get('url');
-            
-            if (videoSource) {
-                // 如果有source参数但没有已有的转录结果，则生成模拟数据
-                if (!sessionStorage.getItem('transcription_result')) {
-                    this.generateMockTranscription(videoSource);
-                    // 强制刷新页面以应用新生成的转录
-                    if (!urlParams.has('refreshed')) {
-                        window.location.href = window.location.pathname + '?source=' + 
-                            encodeURIComponent(videoSource) + '&refreshed=true';
-                    }
-                }
-            }
-        }
-    },
-    
-    // 处理转换按钮点击
-    handleConvertButtonClick: function(event) {
-        // 获取相关元素
-        const btn = event.currentTarget;
-        const parentContainer = btn.closest('.link-input-container, .video-link-converter');
-        let linkInput;
-        
-        if (parentContainer) {
-            linkInput = parentContainer.querySelector('.link-input');
-        }
-        
-        if (!linkInput) {
-            // 如果找不到输入框，尝试在页面上查找任何链接输入框
-            linkInput = document.querySelector('.link-input');
-            if (!linkInput) {
-                console.error('找不到链接输入框');
-                alert('系统错误：找不到输入框。请刷新页面后重试。');
+    if (convertBtn && linkInput) {
+        convertBtn.addEventListener('click', function() {
+            const videoUrl = linkInput.value.trim();
+            if (!videoUrl) {
+                alert('请输入YouTube或TikTok等视频链接');
                 return;
             }
-        }
-        
-        const videoUrl = linkInput.value.trim();
-        
-        // 验证链接
-        if (!videoUrl) {
-            alert('请输入YouTube或TikTok视频链接');
-            return;
-        }
-        
-        // 更新按钮状态
-        const originalBtnHtml = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 转换中...';
-        btn.disabled = true;
-        
-        // 处理视频URL
-        this.processVideoLink(videoUrl)
-            .then(result => {
-                console.log('处理成功:', result);
-                
-                // 根据result决定跳转
-                if (result.directToEdit) {
-                    // 直接跳到编辑页面
-                    window.location.href = 'edit.html?source=' + encodeURIComponent(videoUrl);
-                } else {
-                    // 跳到转换页面
-                    window.location.href = `convert.html?id=${result.id}&platform=${result.platform}&url=${encodeURIComponent(videoUrl)}`;
-                }
-            })
-            .catch(error => {
-                console.error('处理失败:', error);
-                alert('转换失败: ' + error.message);
-                
-                // 恢复按钮状态
-                btn.innerHTML = originalBtnHtml;
-                btn.disabled = false;
-            });
-    },
-    
-    // 处理视频链接
-    processVideoLink: function(videoUrl) {
-        return new Promise((resolve, reject) => {
+            
+            // 验证链接格式
+            // if (!isValidVideoUrl(videoUrl)) {
+            //     alert('请输入有效的YouTube或TikTok视频链接');
+            //     return;
+            // }
+            
             // 显示加载状态
-            this.showLoading(true, '准备转换...');
+            convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 转换中...';
+            convertBtn.disabled = true;
             
-            // 检测平台
-            let platform = 'Video';
-            if (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) {
-                platform = 'YouTube';
-            } else if (videoUrl.includes('tiktok')) {
-                platform = 'TikTok';
-            }
-            
-            // 生成随机ID
-            const randomId = 'mock-' + Math.random().toString(36).substring(2, 10);
-            
-            // 模拟API调用延迟
-            setTimeout(async () => {
-                try {
-
-                    const { createClient } = deepgram;
-                    const _deepgram = createClient("f0fbf7690c58f75e3ad19569a25679c90f189f2c");
-
-                    const { result, error } = await _deepgram.listen.prerecorded.transcribeUrl(
-                        {
-                          url: videoUrl,
-                        },
-                        {
-                          model: "nova",
-                        }
-                      );
-
-                      console.log(result);
-                      console.log(error);
-                    // 生成并保存模拟数据
-                    this.generateMockTranscription(videoUrl);
-                    
-                    // 验证数据是否成功保存
-                    const savedData = sessionStorage.getItem('transcription_result');
-                    if (!savedData) {
-                        throw new Error('无法保存转录数据，请检查浏览器设置');
-                    }
-                    
-                    // 隐藏加载状态
-                    this.showLoading(false);
-                    
-                    // 解析为成功
-                    resolve({
-                        success: true,
-                        id: randomId,
-                        platform: platform,
-                        directToEdit: false // 设置为true会直接跳到编辑页面，false会先显示转换过程
-                    });
-                } catch (error) {
-                    this.showLoading(false);
-                    reject(error);
-                }
-            }, 1500);
+            // 跳转到转换页面
+            setTimeout(() => {
+                window.location.href = 'convert.html?source=' + encodeURIComponent(videoUrl);
+            }, 1000);
         });
-    },
-    
-    // 生成模拟转录结果
-    generateMockTranscription: function(videoUrl) {
-        console.log('生成模拟转录数据...');
-        
-        // 根据URL识别平台
-        let platform = 'Video';
-        if (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) {
-            platform = 'YouTube';
-        } else if (videoUrl.includes('tiktok')) {
-            platform = 'TikTok';
-        }
-        
-        // 创建转录模拟数据
-        const mockResult = {
-            text: `这是一段来自${platform}视频的模拟转录文本。\n\n该视频链接为：${videoUrl}\n\n转录系统会自动识别视频中的语音内容并转换为文本。您可以在编辑区域修改这些文本，添加标点符号，或进行其他编辑。\n\n完成编辑后，您可以将文本下载为各种格式，包括TXT、DOCX或PDF。`,
-            segments: [
-                { start: 0, text: `这是一段来自${platform}视频的模拟转录文本。` },
-                { start: 5, text: `该视频链接为：${videoUrl}` },
-                { start: 10, text: "转录系统会自动识别视频中的语音内容并转换为文本。" },
-                { start: 15, text: "您可以在编辑区域修改这些文本，添加标点符号，或进行其他编辑。" },
-                { start: 20, text: "完成编辑后，您可以将文本下载为各种格式，包括TXT、DOCX或PDF。" }
-            ],
-            language: "zh-CN",
-            source: videoUrl,
-            platform: platform
-        };
-        
-        try {
-            // 先清除可能存在的旧数据
-            sessionStorage.removeItem('transcription_result');
-            
-            // 保存到会话存储
-            const jsonData = JSON.stringify(mockResult);
-            sessionStorage.setItem('transcription_result', jsonData);
-            
-            console.log('模拟数据已保存到sessionStorage:', jsonData.substring(0, 100) + '...');
-            
-            // 额外验证存储是否成功
-            const savedData = sessionStorage.getItem('transcription_result');
-            if (!savedData) {
-                console.error('保存到sessionStorage失败');
-                throw new Error('存储失败');
-            }
-        } catch (error) {
-            console.error('存储错误:', error);
-            throw new Error('无法保存转录数据: ' + error.message);
-        }
-    },
-    
-    // 开始转换监控
-    startConversionMonitoring: function() {
-        console.log('开始监控转换进度...');
-        
-        // 获取URL参数
-        const urlParams = new URLSearchParams(window.location.search);
-        const predictionId = urlParams.get('id');
-        const platform = urlParams.get('platform') || 'Video';
-        const videoUrl = urlParams.get('url') || '';
-        
-        if (!predictionId) {
-            console.error('缺少转录ID参数');
-            alert('缺少必要参数，将返回首页');
-            window.location.href = 'index.html';
-            return;
-        }
-        
-        console.log('转录ID:', predictionId);
-        console.log('平台:', platform);
-        console.log('视频URL:', videoUrl);
-        
-        // 更新页面信息
-        this.updateConversionPageInfo(predictionId, platform, videoUrl);
-        
-        // 模拟转换进度
-        this.simulateConversion(predictionId, videoUrl, platform);
-    },
-    
-    // 更新转换页面信息
-    updateConversionPageInfo: function(id, platform, url) {
-        const fileNameElement = document.getElementById('file-name');
-        if (fileNameElement) {
-            fileNameElement.textContent = decodeURIComponent(url);
-        }
-        
-        const fileSizeElement = document.getElementById('file-size');
-        if (fileSizeElement) {
-            fileSizeElement.textContent = platform + ' Video';
-        }
-        
-        const currentStepElement = document.getElementById('current-step');
-        if (currentStepElement) {
-            currentStepElement.textContent = '准备转换...';
-        }
-    },
-    
-    // 模拟转换进度
-    simulateConversion: function(id, url, platform) {
-        const progressBar = document.getElementById('progress-bar');
-        const progressPercentage = document.getElementById('progress-percentage');
-        const currentStep = document.getElementById('current-step');
-        const processedTime = document.getElementById('processed-time');
-        const totalTime = document.getElementById('total-time');
-        const estimatedTime = document.getElementById('estimated-time');
-        
-        // 设置随机总时间（模拟）
-        const totalSeconds = Math.floor(Math.random() * (300 - 60 + 1)) + 60;
-        if (totalTime) totalTime.textContent = this.formatTime(totalSeconds);
-        
-        // 模拟进度
-        let progress = 0;
-        let step = 0;
-        
-        // 步骤文本
-        const steps = [
-            '连接视频源...',
-            '提取音频...',
-            '分析语音内容...',
-            '转换为文本...',
-            '格式化文本...',
-            '完成转换!'
-        ];
-        
-        // 更新步骤文本
-        if (currentStep) currentStep.textContent = steps[0];
-        
-        const interval = setInterval(() => {
-            // 增加进度
-            progress += Math.random() * 3 + 1; // 随机增加1-4%
-            
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                
-                // 先检查是否已有数据
-                const existingData = sessionStorage.getItem('transcription_result');
-                
-                // 只有在没有数据时才生成
-                if (!existingData) {
-                    // 生成模拟转录结果
-                    this.generateMockTranscription(url);
-                }
-                
-                // 显示完成状态
-                this.showCompletionState();
-            }
-            
-            // 更新进度显示
-            if (progressBar) progressBar.style.width = progress + '%';
-            if (progressPercentage) progressPercentage.textContent = Math.floor(progress) + '%';
-            
-            // 更新时间显示
-            this.updateTimeDisplays(progress, totalSeconds, processedTime, estimatedTime);
-            
-            // 更新步骤
-            const currentStepIndex = Math.min(Math.floor(progress / (100 / (steps.length - 1))), steps.length - 1);
-            if (currentStep && currentStepIndex != step) {
-                step = currentStepIndex;
-                currentStep.textContent = steps[currentStepIndex];
-            }
-        }, 300); // 加快模拟进度速度
-    },
-    
-    // 更新时间显示
-    updateTimeDisplays: function(progress, totalSeconds, processedTimeElement, estimatedTimeElement) {
-        if (processedTimeElement) {
-            const processedSeconds = Math.floor((progress / 100) * totalSeconds);
-            processedTimeElement.textContent = this.formatTime(processedSeconds);
-        }
-        
-        if (estimatedTimeElement) {
-            const remainingSeconds = totalSeconds - Math.floor((progress / 100) * totalSeconds);
-            estimatedTimeElement.textContent = this.formatTime(remainingSeconds);
-        }
-    },
-    
-    // 格式化时间（秒 -> MM:SS）
-    formatTime: function(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-    },
-    
-    // 显示完成状态
-    showCompletionState: function() {
-        // 隐藏进度相关元素
-        const loadingAnimation = document.querySelector('.loading-animation');
-        const progressContainer = document.querySelector('.progress-container');
-        const conversionStats = document.querySelector('.conversion-stats');
-        const videoInfo = document.querySelector('.video-info');
-        const cancelBtn = document.getElementById('cancel-btn');
-        
-        if (loadingAnimation) loadingAnimation.style.display = 'none';
-        if (progressContainer) progressContainer.style.display = 'none';
-        if (conversionStats) conversionStats.style.display = 'none';
-        if (videoInfo) videoInfo.style.display = 'none';
-        if (cancelBtn) cancelBtn.style.display = 'none';
-        
-        // 显示完成状态
-        const completionState = document.querySelector('.conversion-complete');
-        if (completionState) completionState.style.display = 'block';
-        
-        // 更新状态文本
-        const statusTitle = document.querySelector('.convert-status h1');
-        const statusText = document.querySelector('.convert-status p');
-        
-        if (statusTitle) statusTitle.textContent = '处理完成';
-        if (statusText) statusText.textContent = '您的视频已成功转换为文本';
-        
-        // 继续按钮显示
-        const continueBtn = document.getElementById('continue-btn');
-        if (continueBtn) {
-            continueBtn.style.display = 'block';
-            
-            // 确保继续按钮跳转到编辑页面
-            continueBtn.addEventListener('click', function() {
-                window.location.href = 'edit.html';
-            });
-        }
-    },
-    
-    // 显示/隐藏加载状态
-    showLoading: function(show, message = '加载中...') {
-        let loadingElement = document.getElementById('loading-overlay');
-        
-        if (!loadingElement) {
-            // 创建加载元素
-            const overlay = document.createElement('div');
-            overlay.id = 'loading-overlay';
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.7);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                z-index: 9999;
-                color: white;
-                font-size: 1.2rem;
-            `;
-            
-            const spinner = document.createElement('div');
-            spinner.className = 'loading-circle';
-            spinner.style.cssText = `
-                width: 40px;
-                height: 40px;
-                border: 4px solid rgba(255,255,255,0.3);
-                border-top-color: white;
-                border-radius: 50%;
-                animation: spin 1s infinite linear;
-                margin-bottom: 20px;
-            `;
-            
-            const messageEl = document.createElement('div');
-            messageEl.id = 'loading-message';
-            messageEl.textContent = message;
-            
-            overlay.appendChild(spinner);
-            overlay.appendChild(messageEl);
-            document.body.appendChild(overlay);
-            
-            // 添加动画样式
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            loadingElement = overlay;
-        } else {
-            const messageEl = document.getElementById('loading-message');
-            if (messageEl) messageEl.textContent = message;
-        }
-        
-        if (show) {
-            loadingElement.style.display = 'flex';
-        } else {
-            loadingElement.style.display = 'none';
-        }
     }
-};
-
-// 添加一个polyfill，以防浏览器不支持padStart
-if (!String.prototype.padStart) {
-    String.prototype.padStart = function padStart(targetLength, padString) {
-        targetLength = targetLength >> 0;
-        padString = String(typeof padString !== 'undefined' ? padString : ' ');
-        if (this.length >= targetLength) {
-            return String(this);
-        } else {
-            targetLength = targetLength - this.length;
-            if (targetLength > padString.length) {
-                padString += padString.repeat(targetLength / padString.length);
-            }
-            return padString.slice(0, targetLength) + String(this);
-        }
-    };
 }
 
-// 当DOM加载完成后初始化
-document.addEventListener('DOMContentLoaded', function() {
-    VIDEO_CONVERTER.init();
-});
+/**
+ * 初始化转换页面
+ */
+function initConversionPage() {
+    // 从URL获取视频源
+    const urlParams = new URLSearchParams(window.location.search);
+    videoSource = urlParams.get('source');
+    
+    if (!videoSource) {
+        alert('未找到视频源，请返回首页重试');
+        return;
+    }
+    
+    // 更新页面显示信息
+    updateConversionInfo(videoSource);
+    
+    // 开始转换流程
+    startConversion(videoSource);
+}
+
+/**
+ * 更新转换页面信息
+ */
+function updateConversionInfo(videoUrl) {
+    // 更新文件名显示
+    const fileNameElement = document.querySelector('#file-name');
+    if (fileNameElement) {
+        fileNameElement.textContent = videoUrl;
+    }
+    
+    // 更新视频类型
+    const fileTypeElement = document.querySelector('#file-size');
+    if (fileTypeElement) {
+        if (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) {
+            fileTypeElement.textContent = 'YouTube Video';
+        } else if (videoUrl.includes('tiktok')) {
+            fileTypeElement.textContent = 'TikTok Video';
+        } else {
+            fileTypeElement.textContent = 'Video Link';
+        }
+    }
+}
+
+/**
+ * 开始转换流程
+ */
+async function startConversion(videoUrl) {
+    if (convertInProgress) return;
+    
+    convertInProgress = true;
+    
+    // 更新当前步骤显示
+    updateCurrentStep('下载视频中...');
+	
+	// 下载视频
+	const videoToTextResult = await videoToText(videoUrl);
+	
+	if (videoToTextResult.code !== 1) {
+		throw new Error(videoToTextResult.msg);
+	}
+	
+	if(videoToTextResult.data) {
+		// 模拟进度更新
+		simulateProgressUpdate();
+		
+		// 这里使用setTimeout模拟整个过程
+		setTimeout(() => {
+		    // 模拟转换完成
+		    convertInProgress = false;
+		    
+		    // 生成示例转录文本
+		    const transcriptText = videoToTextResult.data;
+		    
+		    // 将转录结果保存到localStorage
+		    localStorage.setItem('transcriptText', transcriptText);
+		    
+		    // 转到编辑页面
+		    window.location.href = 'edit.html?source=' + encodeURIComponent(videoUrl);
+		}, 8000); // 模拟8秒后完成
+	}
+    
+    // 实际情况需要进行以下步骤：
+    // 1. 使用服务器端代理下载视频
+    // 2. 提取音频
+    // 3. 发送到Deepgram API
+    // 4. 处理响应结果
+}
+
+/**
+ * 模拟进度更新
+ */
+function simulateProgressUpdate() {
+    let progress = 5;
+    const progressBar = document.querySelector('.progress-bar');
+    const progressPercent = document.getElementById('progress-percent');
+    const totalDuration = document.querySelector('.total-duration');
+    const processedDuration = document.querySelector('.processed-duration');
+    const estimatedTime = document.querySelector('.estimated-time');
+    
+    // 更新总时长(模拟1分钟的视频)
+    if (totalDuration) totalDuration.textContent = 'gettingIn...';
+    
+    const interval = setInterval(() => {
+        progress += 5;
+        
+        if (progressBar) {
+            progressBar.style.width = progress + '%';
+        }
+        
+        if (progressPercent) {
+            progressPercent.textContent = progress + '%';
+        }
+        
+        // 更新已处理时间
+        if (processedDuration) {
+            const processed = Math.floor((progress / 100) * 64);
+            const minutes = Math.floor(processed / 60);
+            const seconds = processed % 60;
+            processedDuration.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // 更新剩余时间
+        if (estimatedTime) {
+            const remaining = Math.floor(((100 - progress) / 100) * 64);
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+            estimatedTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // 更新当前步骤
+        if (progress > 30 && progress < 60) {
+            updateCurrentStep('分析语音内容...');
+        } else if (progress >= 60 && progress < 90) {
+            updateCurrentStep('生成文本转录...');
+        } else if (progress >= 90) {
+            updateCurrentStep('完成转换，准备跳转...');
+        }
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+
+/**
+ * 更新当前步骤显示
+ */
+function updateCurrentStep(stepText) {
+    const currentStepElement = document.querySelector('#current-step');
+    if (currentStepElement) {
+        currentStepElement.textContent = stepText;
+    }
+}
+
+/**
+ * 初始化编辑页面
+ */
+function initEditPage() {
+    // 从localStorage获取转录文本
+    const transcriptText = localStorage.getItem('transcriptText');
+    
+    // 获取编辑器元素
+    const editorElement = document.querySelector('.transcript-editor');
+    
+    if (editorElement && transcriptText) {
+        // 填充编辑器内容
+        editorElement.innerHTML = transcriptText;
+    }
+    
+    // 从URL获取视频源
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoSource = urlParams.get('source');
+    
+    // 更新时间戳信息
+    updateTimestamps(videoSource);
+    
+    // 初始化下载按钮
+    initDownloadButton();
+}
+
+/**
+ * 更新时间戳信息
+ */
+function updateTimestamps(videoUrl) {
+	console.log(11111, videoUrl)
+    const timestampsContainer = document.querySelector('.timestamps');
+    if (!timestampsContainer) return;
+    
+    // 清空现有时间戳
+    timestampsContainer.innerHTML = '';
+    
+    // 创建示例时间戳
+    const timestamps = [
+        { time: '该视频链接为: ', text: videoUrl },
+    ];
+    
+    // 添加时间戳到容器
+    timestamps.forEach(stamp => {
+        const timestampItem = document.createElement('div');
+        timestampItem.className = 'timestamp-item';
+        timestampItem.innerHTML = `
+            <div class="timestamp-time">${stamp.time}</div>
+            <div class="timestamp-text">${stamp.text}</div>
+        `;
+        
+        // 添加点击事件
+        timestampItem.addEventListener('click', function() {
+            // 在实际应用中，这里应该滚动到编辑器中对应的位置
+            console.log('点击了时间戳:', stamp.time);
+        });
+        
+        // 可以选择添加或不添加，具体取决于edit.html中是否已有时间戳
+        timestampsContainer.appendChild(timestampItem);
+    });
+}
+
+/**
+ * 初始化下载按钮
+ */
+function initDownloadButton() {
+    const downloadBtn = document.querySelector('.download-btn');
+    if (!downloadBtn) return;
+    
+    downloadBtn.addEventListener('click', function() {
+        const editorElement = document.querySelector('.transcript-editor');
+        if (!editorElement) return;
+        
+        const text = editorElement.innerText || editorElement.textContent;
+        
+        // 创建Blob对象
+        const blob = new Blob([text], { type: 'text/plain' });
+        
+        // 创建下载链接
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'transcript.txt';
+        
+        // 触发下载
+        document.body.appendChild(a);
+        a.click();
+        
+        // 清理
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+    });
+}
+
+/**
+ * 生成示例转录文本
+ */
+function generateSampleTranscript() {
+    // 在实际应用中，这应该是从Deepgram API返回的内容
+    return `
+        <p>这是一段示例的转录文本。在实际应用中，这里将显示从视频中提取的实际语音内容。</p>
+        <p>Deepgram API提供了高质量的语音识别服务，可以准确地将语音转换为文本。</p>
+        <p>您可以在此编辑器中自由编辑转录内容，添加标点符号，修正错误，或进行其他必要的调整。</p>
+        <p>完成编辑后，您可以下载文本或将其保存到您的账户中。</p>
+    `;
+}
+
+/**
+ * 调用Deepgram API进行语音识别(实际实现)
+ */
+async function transcribeWithDeepgram(audioBuffer) {
+    try {
+        // 初始化Deepgram
+        const deepgram = new Deepgram.Deepgram(DEEPGRAM_API_KEY);
+        
+        // 设置转录选项
+        const options = {
+            punctuate: true,
+            language: 'zh-CN',
+            model: 'general',
+            tier: 'enhanced'
+        };
+        
+        // 发送请求
+        const response = await deepgram.transcription.preRecorded(
+            { buffer: audioBuffer },
+            options
+        );
+        
+        // 处理结果
+        if (response && response.results && response.results.channels) {
+            const transcript = response.results.channels[0].alternatives[0].transcript;
+            return transcript;
+        } else {
+            throw new Error('转录结果格式不正确');
+        }
+    } catch (error) {
+        console.error('Deepgram API错误:', error);
+        return '转录失败。请稍后重试。';
+    }
+}
+
+/**
+ * 验证视频URL是否有效
+ */
+function isValidVideoUrl(url) {
+    // 简单验证是否为YouTube或TikTok链接
+    return /youtube\.com|youtu\.be|tiktok\.com/.test(url);
+}

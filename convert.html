@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Converting - textfromvideo.com</title>
+    <title>Video to Text Converter</title>
     <meta name="description" content="Video to text processing in progress, please wait">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/responsive.css">
@@ -11,529 +12,319 @@
     <!-- Font icon library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@deepgram/sdk"></script>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2D0HL98RMQ"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-2D0HL98RMQ');
+</script>
+
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <h1>textfromvideo</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-outline">Login</a>
+                <a href="#" class="btn btn-primary">Sign Up</a>
+            </div>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conversion Status -->
+    <section class="conversion-section">
+        <div class="container">
+            <div class="conversion-card">
+                <div class="conversion-header">
+                    <h2>Video to Text Converter</h2>
+                    <p>Converting your video to text, please wait...</p>
+                </div>
+
+                <div class="conversion-progress">
+                    <div class="progress-animation">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 5%;"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span>Processing video</span>
+                        <span id="progress-percent">5%</span>
+                    </div>
+                </div>
+
+                <div class="conversion-time">
+                    <div class="time-item">
+                        <span class="processed-duration">processing...</span>
+                        <p>Processed Duration</p>
+                    </div>
+                    <div class="time-item">
+                        <span class="total-duration">gettingIn...</span>
+                        <p>Total Duration</p>
+                    </div>
+                    <div class="time-item">
+                        <span class="estimated-time">calculating...</span>
+                        <p>Estimated Time Left</p>
+                    </div>
+                </div>
+
+                <div class="video-info">
+                    <div class="info-row">
+                        <div class="info-label">File Name</div>
+                        <div class="info-value" id="file-name">https://www.youtube.com/shorts/1Vo0GD8wpZY</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">File Size</div>
+                        <div class="info-value" id="file-size">YouTube Video</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Current Step</div>
+                        <div class="info-value" id="current-step">Analyzing speech content...</div>
+                    </div>
+                </div>
+
+                <div class="conversion-actions">
+                    <button class="btn btn-outline cancel-btn">Cancel Conversion</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section (Simplified) -->
+    <footer class="footer footer-light">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 textfromvideo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/apiService.js"></script>
+    <script src="js/videoConverter.js"></script>
+
     <style>
-        /* Conversion page special styles */
-        body {
-            background-color: var(--light-bg);
+        .conversion-section {
+            padding: 60px 0;
+            min-height: calc(100vh - 250px);
+            display: flex;
+            align-items: center;
+            background-color: #f5f7fa;
         }
-        
-        .convert-container {
-            max-width: 600px;
-            margin: 150px auto 0;
+
+        .conversion-card {
             background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            border-radius: 8px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
             padding: 40px;
-            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
         }
-        
-        .convert-status {
+
+        .conversion-header {
+            text-align: center;
             margin-bottom: 30px;
         }
-        
-        .convert-status h1 {
+
+        .conversion-header h2 {
             font-size: 1.8rem;
-            color: var(--dark-color);
             margin-bottom: 10px;
+            color: #333;
         }
-        
-        .convert-status p {
-            color: var(--light-text);
+
+        .conversion-header p {
+            color: #666;
+            font-size: 1.1rem;
         }
-        
-        .progress-container {
-            margin: 30px 0;
+
+        .progress-animation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
         }
-        
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #3498db;
+            border-radius: 50%;
+            margin: 0 6px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         .progress-bar-container {
             height: 8px;
-            background-color: var(--light-bg);
+            background-color: #e0e0e0;
             border-radius: 4px;
             overflow: hidden;
             margin-bottom: 10px;
         }
-        
+
         .progress-bar {
             height: 100%;
-            background-color: var(--primary-color);
-            width: 0%;
-            transition: width 0.3s ease;
+            background-color: #3498db;
+            border-radius: 4px;
+            transition: width 0.5s ease;
         }
-        
+
         .progress-info {
             display: flex;
             justify-content: space-between;
+            color: #666;
             font-size: 0.9rem;
-            color: var(--light-text);
-        }
-        
-        .conversion-stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
             margin-bottom: 30px;
         }
-        
-        .stat-item {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--light-text);
-        }
-        
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .loading-animation {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px 0;
-        }
-        
-        .pulse-dots {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .pulse-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-        }
-        
-        .pulse-dot:nth-child(1) {
-            animation: pulseDot 1.5s infinite 0s;
-        }
-        
-        .pulse-dot:nth-child(2) {
-            animation: pulseDot 1.5s infinite 0.2s;
-        }
-        
-        .pulse-dot:nth-child(3) {
-            animation: pulseDot 1.5s infinite 0.4s;
-        }
-        
-        .video-info {
-            margin: 30px 0;
-            padding: 15px;
-            background-color: var(--light-bg);
-            border-radius: var(--border-radius);
-            font-size: 0.9rem;
-        }
-        
-        .video-info-item {
+
+        .conversion-time {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            text-align: center;
+            margin-bottom: 40px;
         }
-        
-        .video-info-item:last-child {
+
+        .time-item span {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3498db;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .time-item p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .video-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
             border-bottom: none;
+            padding-bottom: 0;
         }
-        
-        .video-info-label {
-            color: var(--light-text);
+
+        .info-label {
+            width: 120px;
+            color: #666;
+            font-weight: 600;
         }
-        
-        .video-info-value {
-            font-weight: 500;
-            color: var(--dark-color);
+
+        .info-value {
+            flex: 1;
+            color: #333;
+            word-break: break-all;
         }
-        
-        @keyframes pulseDot {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 0.5;
+
+        .conversion-actions {
+            text-align: center;
+        }
+
+        .cancel-btn {
+            padding: 10px 30px;
+        }
+
+        .footer-light {
+            background-color: #f5f7fa;
+            border-top: 1px solid #e0e0e0;
+            padding: 20px 0;
+        }
+
+        .footer-bottom {
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .conversion-card {
+                padding: 20px;
             }
-            50% {
-                transform: scale(1.5);
-                opacity: 1;
+
+            .conversion-time {
+                flex-direction: column;
+                gap: 20px;
             }
-        }
-        
-        /* Completion mark animation */
-        .conversion-complete {
-            display: none;
-        }
-        
-        .check-animation {
-            margin: 30px auto;
+
+            .info-row {
+                flex-direction: column;
+            }
+
+            .info-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
         }
     </style>
-</head>
-<body>
-    <div class="convert-container fade-in">
-        <div class="convert-status">
-            <h1>Video to Text Converter</h1>
-            <p>Converting your video to text, please wait...</p>
-        </div>
-        
-        <div class="loading-animation">
-            <div class="loading-circle"></div>
-            <div class="pulse-dots">
-                <div class="pulse-dot"></div>
-                <div class="pulse-dot"></div>
-                <div class="pulse-dot"></div>
-            </div>
-        </div>
-        
-        <div class="progress-container">
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <div class="progress-info">
-                <span>Processing video</span>
-                <span id="progress-percentage">0%</span>
-            </div>
-        </div>
-        
-        <div class="conversion-stats">
-            <div class="stat-item">
-                <div class="stat-value" id="processed-time">0:00</div>
-                <div class="stat-label">Processed Duration</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="total-time">0:00</div>
-                <div class="stat-label">Total Duration</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="estimated-time">0:00</div>
-                <div class="stat-label">Estimated Time Left</div>
-            </div>
-        </div>
-        
-        <div class="video-info">
-            <div class="video-info-item">
-                <span class="video-info-label">File Name</span>
-                <span class="video-info-value" id="file-name">example.mp4</span>
-            </div>
-            <div class="video-info-item">
-                <span class="video-info-label">File Size</span>
-                <span class="video-info-value" id="file-size">25.7 MB</span>
-            </div>
-            <div class="video-info-item">
-                <span class="video-info-label">Current Step</span>
-                <span class="video-info-value" id="current-step">Extracting Audio</span>
-            </div>
-        </div>
-        
-        <div class="action-buttons">
-            <button class="btn btn-outline" id="cancel-btn">Cancel Conversion</button>
-            <button class="btn btn-primary" id="continue-btn" style="display: none;">Continue</button>
-        </div>
-        
-        <!-- Conversion complete state -->
-        <div class="conversion-complete">
-            <div class="check-animation">
-                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
-                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                </svg>
-            </div>
-            <h2>Conversion Complete!</h2>
-            <p>Your video has been successfully converted to text</p>
-            <div class="action-buttons" style="margin-top: 30px;">
-                <a href="edit.html" class="btn btn-primary">View Text</a>
-            </div>
-        </div>
-    </div>
-    
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2D0HL98RMQ"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Convert page loaded');
-            
-            // 获取转录ID
-            const urlParams = new URLSearchParams(window.location.search);
-            const predictionId = urlParams.get('id');
-            const platform = urlParams.get('platform') || 'Video';
-            const videoUrl = urlParams.get('url') || '';
-            
-            console.log('Prediction ID:', predictionId);
-            console.log('Platform:', platform);
-            console.log('Video URL:', videoUrl);
-            
-            if (!predictionId) {
-                console.error('Missing prediction ID');
-                alert('Missing transcription ID');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            // 更新页面信息
-            const fileNameElement = document.getElementById('file-name');
-            if (fileNameElement) {
-                fileNameElement.textContent = decodeURIComponent(videoUrl);
-            }
-            
-            // 更新文件大小和平台信息
-            const fileSizeElement = document.getElementById('file-size');
-            if (fileSizeElement) {
-                fileSizeElement.textContent = platform + ' Video';
-            }
-            
-            // 监控转录进度
-            monitorTranscription(predictionId);
-            
-            // 取消按钮
-            const cancelBtn = document.getElementById('cancel-btn');
-            if (cancelBtn) {
-                cancelBtn.addEventListener('click', function() {
-                    if (confirm('Are you sure you want to cancel the conversion? Any processed content will be lost.')) {
-                        window.location.href = 'index.html';
-                    }
-                });
-            }
-            
-            // 继续按钮
-            const continueBtn = document.getElementById('continue-btn');
-            if (continueBtn) {
-                continueBtn.addEventListener('click', function() {
-                    window.location.href = 'edit.html';
-                });
-            }
-        });
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-        /**
-         * 监控转录进度
-         * @param {string} predictionId - 转录ID
-         */
-        async function monitorTranscription(predictionId) {
-            const progressBar = document.getElementById('progress-bar');
-            const progressPercentage = document.getElementById('progress-percentage');
-            const currentStep = document.getElementById('current-step');
-            const processedTime = document.getElementById('processed-time');
-            const totalTime = document.getElementById('total-time');
-            const estimatedTime = document.getElementById('estimated-time');
-            
-            // 从全局变量或默认值获取Worker URL
-            const workerUrl = (window.CONFIG && window.CONFIG.workerUrl) ? 
-                            window.CONFIG.workerUrl : 
-                            "https://video-to-text-worker.staf2866.workers.dev";
-            
-            console.log('Monitoring transcription ID:', predictionId);
-            console.log('Using worker URL:', workerUrl);
-            
-            let progress = 0;
-            let completed = false;
-            let maxAttempts = 50; // 最多尝试50次，每次2秒，总共约100秒
-            let attempts = 0;
-            let lastStatus = '';
-            
-            // 设置随机总时间（模拟）
-            const totalSeconds = Math.floor(Math.random() * (600 - 180 + 1)) + 180;
-            if (totalTime) totalTime.textContent = formatTime(totalSeconds);
-            
-            // 开发模式或测试ID
-            if (predictionId === 'test-id-123' || window.location.protocol === 'file:') {
-                console.log('Development mode or test ID detected - simulating conversion');
-                // 模拟处理
-                let testProgress = 0;
-                const simInterval = setInterval(() => {
-                    testProgress += 5;
-                    if (testProgress >= 100) {
-                        clearInterval(simInterval);
-                        
-                        // 创建模拟转录结果
-                        const mockResult = {
-                            text: "This is a test transcription. The actual transcription will appear here when a real video is processed.",
-                            segments: [
-                                { start: 0, text: "This is a test transcription." },
-                                { start: 5, text: "The actual transcription will appear here when a real video is processed." }
-                            ],
-                            language: "en"
-                        };
-                        
-                        // 保存到会话存储
-                        sessionStorage.setItem('transcription_result', JSON.stringify(mockResult));
-                        
-                        // 显示完成状态
-                        showCompletionState();
-                    }
-                    
-                    // 更新UI
-                    if (progressBar) progressBar.style.width = testProgress + '%';
-                    if (progressPercentage) progressPercentage.textContent = Math.floor(testProgress) + '%';
-                    updateTimeDisplays(testProgress);
-                }, 1000);
-                
-                return;
-            }
-            
-            // 更新时间显示
-            function updateTimeDisplays(currentProgress) {
-                if (processedTime) {
-                    const processedSeconds = Math.floor((currentProgress / 100) * totalSeconds);
-                    processedTime.textContent = formatTime(processedSeconds);
-                }
-                
-                if (estimatedTime) {
-                    const remainingSeconds = totalSeconds - Math.floor((currentProgress / 100) * totalSeconds);
-                    estimatedTime.textContent = formatTime(remainingSeconds);
-                }
-            }
-            
-            // 定期检查状态
-            const checkInterval = setInterval(async () => {
-                try {
-                    attempts++;
-                    if (attempts > maxAttempts) {
-                        clearInterval(checkInterval);
-                        console.error('Maximum check attempts reached');
-                        alert('Transcription is taking longer than expected. Please check back later.');
-                        return;
-                    }
-                    
-                    // 对于实际API调用
-                    console.log(`Checking status (attempt ${attempts}/${maxAttempts})...`);
-                    const response = await fetch(`${workerUrl}/api/checkStatus?id=${predictionId}`);
-                    
-                    console.log('Status response:', response.status);
-                    
-                    if (!response.ok) {
-                        console.error('Error response:', response.status);
-                        if (attempts > 3) { // 允许前几次失败
-                            throw new Error('Failed to check status');
-                        }
-                        return; // 继续尝试
-                    }
-                    
-                    const data = await response.json();
-                    console.log('Status data:', data);
-                    
-                    if (data.status && data.status !== lastStatus) {
-                        lastStatus = data.status;
-                        console.log('Transcription status changed to:', data.status);
-                        if (currentStep) currentStep.textContent = `Status: ${data.status}`;
-                    }
-                    
-                    if (data.status === 'succeeded') {
-                        // 转录完成
-                        clearInterval(checkInterval);
-                        completed = true;
-                        progress = 100;
-                        
-                        console.log('Transcription completed successfully');
-                        console.log('Output data:', data.output);
-                        
-                        // 构造并保存结果
-                        const result = {
-                            text: typeof data.output === 'string' ? data.output : data.output?.text || '',
-                            segments: data.output?.segments || [],
-                            language: data.output?.language || 'en'
-                        };
-                        
-                        console.log('Saving result to sessionStorage:', result);
-                        sessionStorage.setItem('transcription_result', JSON.stringify(result));
-                        
-                        // 显示完成状态
-                        showCompletionState();
-                    } else if (data.status === 'failed') {
-                        // 转录失败
-                        clearInterval(checkInterval);
-                        console.error('Transcription failed:', data.error || 'Unknown error');
-                        alert('Transcription failed: ' + (data.error || 'Unknown error'));
-                        window.location.href = 'index.html';
-                    } else {
-                        // 更新进度 (processing/starting)
-                        if (data.status === 'processing') {
-                            // 进度从40%到90%之间
-                            progress = Math.min(90, 40 + (attempts * 2.5));
-                            if (currentStep) currentStep.textContent = 'Processing Video';
-                        } else {
-                            // 进度从0%到40%之间
-                            progress = Math.min(40, attempts * 5);
-                            if (currentStep) currentStep.textContent = 'Starting Transcription';
-                        }
-                    }
-                    
-                    // 更新UI
-                    if (progressBar) progressBar.style.width = progress + '%';
-                    if (progressPercentage) progressPercentage.textContent = Math.floor(progress) + '%';
-                    updateTimeDisplays(progress);
-                    
-                } catch (error) {
-                    console.error('Error checking status:', error);
-                    // 出错时继续检查，不中断
-                }
-            }, 2000); // 每2秒检查一次
-            
-            // 模拟进度更新（缓慢增加进度，平滑显示）
-            const simulateProgress = setInterval(() => {
-                if (completed || progress >= 95) {
-                    clearInterval(simulateProgress);
-                    return;
-                }
-                
-                // 缓慢增加进度，最高到95%
-                progress += 0.5;
-                if (progress > 95) progress = 95;
-                
-                // 更新UI
-                if (progressBar) progressBar.style.width = progress + '%';
-                if (progressPercentage) progressPercentage.textContent = Math.floor(progress) + '%';
-                updateTimeDisplays(progress);
-            }, 1000);
-        }
-
-        /**
-         * 格式化时间（秒 -> MM:SS）
-         * @param {number} seconds - 秒数
-         * @returns {string} - 格式化的时间
-         */
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-        }
-
-        /**
-         * 显示完成状态
-         */
-        function showCompletionState() {
-            // 隐藏进度相关元素
-            const loadingAnimation = document.querySelector('.loading-animation');
-            const progressContainer = document.querySelector('.progress-container');
-            const conversionStats = document.querySelector('.conversion-stats');
-            const videoInfo = document.querySelector('.video-info');
-            const cancelBtn = document.getElementById('cancel-btn');
-            
-            if (loadingAnimation) loadingAnimation.style.display = 'none';
-            if (progressContainer) progressContainer.style.display = 'none';
-            if (conversionStats) conversionStats.style.display = 'none';
-            if (videoInfo) videoInfo.style.display = 'none';
-            if (cancelBtn) cancelBtn.style.display = 'none';
-            
-            // 显示完成状态
-            const completionState = document.querySelector('.conversion-complete');
-            if (completionState) completionState.style.display = 'block';
-            
-            // 更新状态文本
-            const statusTitle = document.querySelector('.convert-status h1');
-            const statusText = document.querySelector('.convert-status p');
-            
-            if (statusTitle) statusTitle.textContent = 'Processing Complete';
-            if (statusText) statusText.textContent = 'Your video has been successfully converted to text';
-            
-            // 继续按钮显示
-            const continueBtn = document.getElementById('continue-btn');
-            if (continueBtn) continueBtn.style.display = 'block';
-        }
+        gtag('config', 'G-2D0HL98RMQ');
     </script>
-<script src="js/videoConverter.js"></script>
+
 </body>
+
 </html>
